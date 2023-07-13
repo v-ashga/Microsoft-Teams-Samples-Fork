@@ -21,8 +21,8 @@
     // using the web service (see /auth/token handler in app.js)
     function getServerSideToken(clientSideToken) {
         return new Promise((resolve, reject) => {
-            microsoftTeams.initialize();
-            microsoftTeams.getContext((context) => {
+            microsoftTeams.app.initialize();
+            microsoftTeams.app.getContext().then((context) => {
                 fetch('/auth/token', {
                     method: 'POST',
                     headers: {
@@ -30,7 +30,7 @@
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        tid: context.tid,
+                        tid: context && context.user.tenant.id,
                         token: clientSideToken
                     }),
                 })
