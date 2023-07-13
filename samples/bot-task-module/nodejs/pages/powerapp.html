@@ -1,5 +1,5 @@
 <head>
-  <script src="https://res.cdn.office.net/teams-js/2.0.0/js/MicrosoftTeams.min.js"
+  <script src="https://res.cdn.office.net/teams-js/2.2.0/js/MicrosoftTeams.min.js"
     integrity="sha384-QtTBFeFlfRDZBfwHJHYQp7MdLJ2C3sfAEB1Qpy+YblvjavBye+q87TELpTnvlXw4"
     crossorigin="anonymous"></script>
 </head>
@@ -30,7 +30,7 @@
     microsoftTeams.app.initialize().then(() => {
       microsoftTeams.app.getContext().then((context) => {
         // If not running in the Microsoft tenant, show an error message; otherwise, show the PowerApp
-        var showPowerApp = (context.tid === "<<Microsoft-Tenant-ID>>"); // Microsoft's tenant ID
+        var showPowerApp = (context.user.tenant.id === "0ffe0bbc-13e6-4359-9b63-aecdbae41b4e"); // Microsoft's tenant ID
         // Uncomment the line below if you create your own PowerApp and modify the iframe's src= URL
         // var showPowerApp = true
         if (showPowerApp) {

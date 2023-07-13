@@ -4,11 +4,9 @@ esbuild.build({
     bundle: true,
     platform: 'node',
     outfile: 'dist/index.js'
-})
-    .then((r) => {
-        console.log(`Build succeeded.`);
-    })
-    .catch((e) => {
-        console.log("Error building:", e.message);
-        process.exit(1);
-    });
+}).then((r) => {
+    console.log('Build succeeded.');
+}).catch((e) => {
+    console.log('Error building:", e.message');
+    process.exit(1);
+});

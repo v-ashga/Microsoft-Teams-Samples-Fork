@@ -43,7 +43,6 @@ adapter.onTurnError = async (context, error) => {
 
     // Uncomment below commented line for local debugging.
     // await context.sendActivity(`Sorry, it looks like something went wrong. Exception Caught: ${error}`);
-
 };
 
 // Create the bot that will handle incoming messages.
@@ -54,7 +53,7 @@ const server = restify.createServer();
 server.use(restify.plugins.bodyParser());
 
 server.listen(process.env.port || process.env.PORT || 3978, function () {
-    console.log(`\n${server.name} listening to ${server.url}`);
+    console.log(`\n ${server.name} listening to ${server.url}`);
 });
 
 // Listen for incoming requests.
@@ -68,9 +67,9 @@ server.get('/*', restify.plugins.serveStatic({
     directory: './pages'
 }));
 
-server.get('/getAppConfig', (req, res,next) => {
+server.get('/getAppConfig', (req, res, next) => {
     var responseMessageData = {
         MicrosoftAppId: process.env.MicrosoftAppId
-    }
+    };
     res.send(responseMessageData);
-  });
+});
