@@ -22,6 +22,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import * as constants from "../constants";
+
 import { renderACAttachment } from "../utils";
 
 // Function that works both in Node (where window === undefined) or the browser
@@ -43,8 +44,8 @@ export const cardTemplates: any = {
                 "items": [
                     {
                         "type": "TextBlock",
-                        "size": "Medium",
-                        "weight": "Bolder",
+                        "size": "medium",
+                        "weight": "bolder",
                         "text": "{{title}}"
                     },
                     {
@@ -83,6 +84,7 @@ export const cardTemplates: any = {
                 "title": "Deep Links",
                 "card": {
                     "type": "AdaptiveCard",
+                    "version": "1.0",
                     "style": "emphasis",
                     "body": [
                         {
@@ -150,11 +152,12 @@ export const cardTemplates: any = {
                 "title": "task/fetch",
                 "card": {
                     "type": "AdaptiveCard",
+                    "version": "1.0",
                     "style": "emphasis",
                     "body": [
                         {
                             "type": "TextBlock",
-                            "weight": "Bolder",
+                            "weight": "bolder",
                             "text": "{{tfJsonTitle1}}"
                         },
                         {
@@ -267,8 +270,8 @@ export const cardTemplates: any = {
                 "items": [
                     {
                         "type": "TextBlock",
-                        "size": "Medium",
-                        "weight": "Bolder",
+                        "size": "medium",
+                        "weight": "bolder",
                         "text": "Adaptive Card Tester"
                     }
                 ]
@@ -308,8 +311,8 @@ export const cardTemplates: any = {
             {
                 "type": "TextBlock",
                 "separator": true,
-                "size": "Large",
-                "weight": "Bolder",
+                "size": "large",
+                "weight": "bolder",
                 "text": "Enter basic information for this position:",
                 "isSubtle": true,
                 "wrap": true
@@ -395,7 +398,7 @@ export const cardTemplates: any = {
                 "title": "Create posting",
                 "data": {
                     "command": "createPosting",
-                    "taskResponse": "{{responseType}}",
+                    "taskResponse": "{{responseType}}"
                 }
             },
             {
@@ -404,6 +407,7 @@ export const cardTemplates: any = {
                 "title": "Cancel"
             }
         ],
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
         "version": "1.0"
     },
     adaptiveCardKitchenSink: {
@@ -411,204 +415,205 @@ export const cardTemplates: any = {
         "type": "AdaptiveCard",
         "version": "1.0",
         "body": [
-          {
-            "type": "TextBlock",
-            "size": "medium",
-            "weight": "bolder",
-            "text": "Input.Text elements",
-            "horizontalAlignment": "center"
-          },
-          {
-            "type": "Input.Text",
-            "placeholder": "Name",
-            "style": "text",
-            "maxLength": 0,
-            "id": "SimpleVal"
-          },
-          {
-            "type": "Input.Text",
-            "placeholder": "Homepage",
-            "style": "url",
-            "maxLength": 0,
-            "id": "UrlVal"
-          },
-          {
-            "type": "Input.Text",
-            "placeholder": "Email",
-            "style": "email",
-            "maxLength": 0,
-            "id": "EmailVal"
-          },
-          {
-            "type": "Input.Text",
-            "placeholder": "Phone",
-            "style": "tel",
-            "maxLength": 0,
-            "id": "TelVal"
-          },
-          {
-            "type": "Input.Text",
-            "placeholder": "Comments",
-            "style": "text",
-            "isMultiline": true,
-            "maxLength": 0,
-            "id": "MultiLineVal"
-          },
-          {
-            "type": "Input.Number",
-            "placeholder": "Quantity",
-            "min": -5,
-            "max": 5,
-            "value": 1,
-            "id": "NumVal"
-          },
-          {
-            "type": "Input.Date",
-            "placeholder": "Due Date",
-            "id": "DateVal",
-            "value": "2017-09-20"
-          },
-          {
-            "type": "Input.Time",
-            "placeholder": "Start time",
-            "id": "TimeVal",
-            "value": "16:59"
-          },
-          {
-            "type": "TextBlock",
-            "size": "medium",
-            "weight": "bolder",
-            "text": "Input.ChoiceSet",
-            "horizontalAlignment": "center"
-          },
-          {
-            "type": "TextBlock",
-            "text": "What color do you want? (compact)"
-          },
-          {
-            "type": "Input.ChoiceSet",
-            "id": "CompactSelectVal",
-            "style": "compact",
-            "value": "1",
-            "choices": [
-              {
-                "title": "Red",
-                "value": "1"
-              },
-              {
-                "title": "Green",
-                "value": "2"
-              },
-              {
-                "title": "Blue",
-                "value": "3"
-              }
-            ]
-          },
-          {
-            "type": "TextBlock",
-            "text": "What color do you want? (expanded)"
-          },
-          {
-            "type": "Input.ChoiceSet",
-            "id": "SingleSelectVal",
-            "style": "expanded",
-            "value": "1",
-            "choices": [
-              {
-                "title": "Red",
-                "value": "1"
-              },
-              {
-                "title": "Green",
-                "value": "2"
-              },
-              {
-                "title": "Blue",
-                "value": "3"
-              }
-            ]
-          },
-          {
-            "type": "TextBlock",
-            "text": "What colors do you want? (multiselect)"
-          },
-          {
-            "type": "Input.ChoiceSet",
-            "id": "MultiSelectVal",
-            "isMultiSelect": true,
-            "value": "1,3",
-            "choices": [
-              {
-                "title": "Red",
-                "value": "1"
-              },
-              {
-                "title": "Green",
-                "value": "2"
-              },
-              {
-                "title": "Blue",
-                "value": "3"
-              }
-            ]
-          },
-          {
-            "type": "TextBlock",
-            "size": "medium",
-            "weight": "bolder",
-            "text": "Input.Toggle",
-            "horizontalAlignment": "center"
-          },
-          {
-            "type": "Input.Toggle",
-            "title": "I accept the terms and conditions (True/False)",
-            "valueOn": "true",
-            "valueOff": "false",
-            "id": "AcceptsTerms"
-          },
-          {
-            "type": "Input.Toggle",
-            "title": "Red cars are better than other cars",
-            "valueOn": "RedCars",
-            "valueOff": "NotRedCars",
-            "id": "ColorPreference"
-          }
+            {
+                "type": "TextBlock",
+                "size": "medium",
+                "weight": "bolder",
+                "text": "Input.Text elements",
+                "horizontalAlignment": "center"
+            },
+            {
+                "type": "Input.Text",
+                "placeholder": "Name",
+                "style": "text",
+                "maxLength": 0,
+                "id": "SimpleVal"
+            },
+            {
+                "type": "Input.Text",
+                "placeholder": "Homepage",
+                "style": "url",
+                "maxLength": 0,
+                "id": "UrlVal"
+            },
+            {
+                "type": "Input.Text",
+                "placeholder": "Email",
+                "style": "email",
+                "maxLength": 0,
+                "id": "EmailVal"
+            },
+            {
+                "type": "Input.Text",
+                "placeholder": "Phone",
+                "style": "tel",
+                "maxLength": 0,
+                "id": "TelVal"
+            },
+            {
+                "type": "Input.Text",
+                "placeholder": "Comments",
+                "style": "text",
+                "isMultiline": true,
+                "maxLength": 0,
+                "id": "MultiLineVal"
+            },
+            {
+                "type": "Input.Number",
+                "placeholder": "Quantity",
+                "min": -5,
+                "max": 5,
+                "value": 1,
+                "id": "NumVal"
+            },
+            {
+                "type": "Input.Date",
+                "placeholder": "Due Date",
+                "id": "DateVal",
+                "value": "2017-09-20"
+            },
+            {
+                "type": "Input.Time",
+                "placeholder": "Start time",
+                "id": "TimeVal",
+                "value": "16:59"
+            },
+            {
+                "type": "TextBlock",
+                "size": "medium",
+                "weight": "bolder",
+                "text": "Input.ChoiceSet",
+                "horizontalAlignment": "center"
+            },
+            {
+                "type": "TextBlock",
+                "text": "What color do you want? (compact)"
+            },
+            {
+                "type": "Input.ChoiceSet",
+                "id": "CompactSelectVal",
+                "style": "compact",
+                "value": "1",
+                "choices": [
+                    {
+                        "title": "Red",
+                        "value": "1"
+                    },
+                    {
+                        "title": "Green",
+                        "value": "2"
+                    },
+                    {
+                        "title": "Blue",
+                        "value": "3"
+                    }
+                ]
+            },
+            {
+                "type": "TextBlock",
+                "text": "What color do you want? (expanded)"
+            },
+            {
+                "type": "Input.ChoiceSet",
+                "id": "SingleSelectVal",
+                "style": "expanded",
+                "value": "1",
+                "choices": [
+                    {
+                        "title": "Red",
+                        "value": "1"
+                    },
+                    {
+                        "title": "Green",
+                        "value": "2"
+                    },
+                    {
+                        "title": "Blue",
+                        "value": "3"
+                    }
+                ]
+            },
+            {
+                "type": "TextBlock",
+                "text": "What colors do you want? (multiselect)"
+            },
+            {
+                "type": "Input.ChoiceSet",
+                "id": "MultiSelectVal",
+                "isMultiSelect": true,
+                "value": "1,3",
+                "choices": [
+                    {
+                        "title": "Red",
+                        "value": "1"
+                    },
+                    {
+                        "title": "Green",
+                        "value": "2"
+                    },
+                    {
+                        "title": "Blue",
+                        "value": "3"
+                    }
+                ]
+            },
+            {
+                "type": "TextBlock",
+                "size": "medium",
+                "weight": "bolder",
+                "text": "Input.Toggle",
+                "horizontalAlignment": "center"
+            },
+            {
+                "type": "Input.Toggle",
+                "title": "I accept the terms and conditions (True/False)",
+                "valueOn": "true",
+                "valueOff": "false",
+                "id": "AcceptsTerms"
+            },
+            {
+                "type": "Input.Toggle",
+                "title": "Red cars are better than other cars",
+                "valueOn": "RedCars",
+                "valueOff": "NotRedCars",
+                "id": "ColorPreference"
+            }
         ],
         "actions": [
-          {
-            "type": "Action.Submit",
-            "title": "Submit",
-            "data": {
-              "id": "1234567890",
-              "taskResponse": "{{responseType}}",
-            }
-          },
-          {
-            "type": "Action.ShowCard",
-            "title": "Show Card",
-            "card": {
-              "type": "AdaptiveCard",
-              "body": [
-                {
-                  "type": "Input.Text",
-                  "placeholder": "enter comment",
-                  "style": "text",
-                  "maxLength": 0,
-                  "id": "CommentVal"
+            {
+                "type": "Action.Submit",
+                "title": "Submit",
+                "data": {
+                    "id": "1234567890",
+                    "taskResponse": "{{responseType}}"
                 }
-              ],
-              "actions": [
-                {
-                  "type": "Action.Submit",
-                  "title": "OK",
-                  "data": {
-                    "taskResponse": "{{responseType}}",
-                  }
+            },
+            {
+                "type": "Action.ShowCard",
+                "title": "Show Card",
+                "card": {
+                    "version": "1.0",
+                    "type": "AdaptiveCard",
+                    "body": [
+                        {
+                            "type": "Input.Text",
+                            "placeholder": "enter comment",
+                            "style": "text",
+                            "maxLength": 0,
+                            "id": "CommentVal"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "Action.Submit",
+                            "title": "OK",
+                            "data": {
+                                "taskResponse": "{{responseType}}"
+                            }
+                        }
+                    ]
                 }
-              ]
             }
-          }
         ]
     },
     acSubmitResponse: {
@@ -616,7 +621,7 @@ export const cardTemplates: any = {
         "body": [
             {
                 "type": "TextBlock",
-                "weight": "Bolder",
+                "weight": "bolder",
                 "text": "Action.Submit Results"
             },
             {
@@ -642,98 +647,98 @@ export const cardTemplates: any = {
     bfThumbnailDeepLink: {
         "contentType": "application/vnd.microsoft.card.thumbnail",
         "content": {
-          "title": "{{title}}",
-          "subtitle": "{{subTitleDL}}",
-          "text": "{{instructionsDL}}",
-          "images": [
-            {
-              "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Wiki_puzzle_piece_blank.svg/951px-Wiki_puzzle_piece_blank.svg.png",
-              "alt": "Task Module Puzzle Piece"
-            }
-          ],
-          "buttons": [
-            {
-                "type": "openUrl",
-                "title": "{{linkbutton1}}",
-                "value": "{{url1}}"
-            },
-            {
-                "type": "openUrl",
-                "title": "{{linkbutton2}}",
-                "value": "{{url2}}"
-            },
-            {
-                "type": "openUrl",
-                "title": "{{linkbutton3}}",
-                "value": "{{url3}}"
-            },
-            {
-                "type": "openUrl",
-                "title": "{{linkbutton4}}",
-                "value": "{{url4}}"
-            },
-            {
-                "type": "openUrl",
-                "title": "{{linkbutton5}}",
-                "value": "{{url5}}"
-            },
-          ],
+            "title": "{{title}}",
+            "subtitle": "{{subTitleDL}}",
+            "text": "{{instructionsDL}}",
+            "images": [
+                {
+                    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Wiki_puzzle_piece_blank.svg/951px-Wiki_puzzle_piece_blank.svg.png",
+                    "alt": "Task Module Puzzle Piece"
+                }
+            ],
+            "buttons": [
+                {
+                    "type": "openUrl",
+                    "title": "{{linkbutton1}}",
+                    "value": "{{url1}}"
+                },
+                {
+                    "type": "openUrl",
+                    "title": "{{linkbutton2}}",
+                    "value": "{{url2}}"
+                },
+                {
+                    "type": "openUrl",
+                    "title": "{{linkbutton3}}",
+                    "value": "{{url3}}"
+                },
+                {
+                    "type": "openUrl",
+                    "title": "{{linkbutton4}}",
+                    "value": "{{url4}}"
+                },
+                {
+                    "type": "openUrl",
+                    "title": "{{linkbutton5}}",
+                    "value": "{{url5}}"
+                },
+            ],
         }
     },
     bfThumbnailTaskFetch: {
         "contentType": "application/vnd.microsoft.card.thumbnail",
         "content": {
-          "title": "{{title}}",
-          "subtitle": "{{subTitleTF}}",
-          "text": "{{instructionsTF}}",
-          "images": [
-            {
-              "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Wiki_puzzle_piece_blank.svg/951px-Wiki_puzzle_piece_blank.svg.png",
-              "alt": "Task Module Puzzle Piece"
-            }
-          ],
-          "buttons": [
-            {
-                "type": "invoke",
-                "title": "{{fetchButtonTitle1}}",
-                "value": {
-                    "type": "task/fetch",
-                    "taskModule": "{{fetchButtonId1}}"
+            "title": "{{title}}",
+            "subtitle": "{{subTitleTF}}",
+            "text": "{{instructionsTF}}",
+            "images": [
+                {
+                    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Wiki_puzzle_piece_blank.svg/951px-Wiki_puzzle_piece_blank.svg.png",
+                    "alt": "Task Module Puzzle Piece"
                 }
-            },
-            {
-                "type": "invoke",
-                "title": "{{fetchButtonTitle2}}",
-                "value": {
-                    "type": "task/fetch",
-                    "taskModule": "{{fetchButtonId2}}"
-                }
-            },
-            {
-                "type": "invoke",
-                "title": "{{fetchButtonTitle3}}",
-                "value": {
-                    "type": "task/fetch",
-                    "taskModule": "{{fetchButtonId3}}"
-                }
-            },
-            {
-                "type": "invoke",
-                "title": "{{fetchButtonTitle4}}",
-                "value": {
-                    "type": "task/fetch",
-                    "taskModule": "{{fetchButtonId4}}"
-                }
-            },
-            {
-                "type": "invoke",
-                "title": "{{fetchButtonTitle5}}",
-                "value": {
-                    "type": "task/fetch",
-                    "taskModule": "{{fetchButtonId5}}"
-                }
-            },
-          ],
+            ],
+            "buttons": [
+                {
+                    "type": "invoke",
+                    "title": "{{fetchButtonTitle1}}",
+                    "value": {
+                        "type": "task/fetch",
+                        "taskModule": "{{fetchButtonId1}}"
+                    }
+                },
+                {
+                    "type": "invoke",
+                    "title": "{{fetchButtonTitle2}}",
+                    "value": {
+                        "type": "task/fetch",
+                        "taskModule": "{{fetchButtonId2}}"
+                    }
+                },
+                {
+                    "type": "invoke",
+                    "title": "{{fetchButtonTitle3}}",
+                    "value": {
+                        "type": "task/fetch",
+                        "taskModule": "{{fetchButtonId3}}"
+                    }
+                },
+                {
+                    "type": "invoke",
+                    "title": "{{fetchButtonTitle4}}",
+                    "value": {
+                        "type": "task/fetch",
+                        "taskModule": "{{fetchButtonId4}}"
+                    }
+                },
+                {
+                    "type": "invoke",
+                    "title": "{{fetchButtonTitle5}}",
+                    "value": {
+                        "type": "task/fetch",
+                        "taskModule": "{{fetchButtonId5}}"
+                    }
+                },
+            ],
         }
     },
     ninjaCatAdaptiveCard: {
@@ -823,7 +828,7 @@ export const fetchTemplates: any = {
                 "height": "small",
                 "width": "small",
                 "fallbackUrl": null,
-                "card": renderACAttachment(cardTemplates.ninjaCatAdaptiveCard, {responseType: "continue"}),
+                "card": renderACAttachment(cardTemplates.ninjaCatAdaptiveCard, { responseType: "continue" }),
             },
         },
     },
