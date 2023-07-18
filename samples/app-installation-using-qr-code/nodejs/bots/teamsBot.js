@@ -3,7 +3,7 @@
 
 const { DialogBot } = require('./dialogBot');
 const { tokenExchangeOperationName } = require('botbuilder');
-const { SsoOAuthHelpler } = require('../SsoOAuthHelpler');
+const { SsoOAuthHelpler } = require('../ssoOauthHelpler');
 
 class TeamsBot extends DialogBot {
     /**

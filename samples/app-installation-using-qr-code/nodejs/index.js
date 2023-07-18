@@ -17,7 +17,7 @@ server.set('views', __dirname);
 
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
-const { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } = require('botbuilder');
+const { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState, TeamsSSOTokenExchangeMiddleware } = require('botbuilder');
 
 const { TeamsBot } = require('./bots/teamsBot');
 const { MainDialog } = require('./dialogs/mainDialog');
@@ -55,7 +55,9 @@ adapter.onTurnError = async (context, error) => {
 // See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
 // A bot requires a state storage system to persist the dialog and user state between messages.
 const memoryStorage = new MemoryStorage();
+const tokenExchangeMiddleware = new TeamsSSOTokenExchangeMiddleware(memoryStorage, process.env.connectionName);
 
+adapter.use(tokenExchangeMiddleware);
 // Create conversation and user state with in-memory storage provider.
 const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
