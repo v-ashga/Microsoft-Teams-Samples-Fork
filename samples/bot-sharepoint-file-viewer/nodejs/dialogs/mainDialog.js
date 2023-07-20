@@ -65,7 +65,7 @@ class MainDialog extends LogoutDialog {
         }
         else {
 
-            if (stepContext.context._activity.text == "viewfile") {
+            if (stepContext.context._activity.text.trim() === "viewfile") {
                 const client = new SimpleGraphClient(tokenResponse.token);
                 const site = await client.getSiteDetails(process.env.SharePointTenantName, process.env.SharePointSiteName);
 
@@ -101,7 +101,7 @@ class MainDialog extends LogoutDialog {
                 return await stepContext.endDialog();
             }
 
-            if (stepContext.context._activity.text == "uploadfile") {
+            if (stepContext.context._activity.text.trim() === "uploadfile") {
                 tokenData["token"] = tokenResponse.token;
                 const userCard = CardFactory.adaptiveCard(this.getAdaptiveCardForFileUpload());
                 await stepContext.context.sendActivity({ attachments: [userCard] });
