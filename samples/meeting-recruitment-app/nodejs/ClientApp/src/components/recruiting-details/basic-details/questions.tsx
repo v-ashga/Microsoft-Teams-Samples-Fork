@@ -1,21 +1,24 @@
-import React from "react";
-import {
-    Flex,
-    Card,
-    Button,
-    Text,
-    Header,
-    AddIcon,
-    MoreIcon,
-    Tooltip,
-    CallControlStopPresentingNewIcon,
-    EditIcon,
-    Loader
-} from '@fluentui/react-northstar'
 import "../../recruiting-details/recruiting-details.css"
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import {
+    AddIcon,
+    Button,
+    CallControlStopPresentingNewIcon,
+    Card,
+    EditIcon,
+    Flex,
+    Header,
+    Loader,
+    MoreIcon,
+    Text,
+    Tooltip
+} from '@fluentui/react-northstar'
+import { deleteQuestion as deleteQuestionDetails, editQuestion, getQuestions, saveQuestions } from "../services/recruiting-detail.service";
+
 import { IQuestionSet } from "./basic-details.types";
-import { saveQuestions, getQuestions, deleteQuestion as deleteQuestionDetails, editQuestion } from "../services/recruiting-detail.service";
+import React from "react";
 
 // Component for the Questions section
 const Questions = (): React.ReactElement => {
@@ -28,25 +31,27 @@ const Questions = (): React.ReactElement => {
     const addQuestionsTaskModule = () => {
         let taskInfo = {
             title: "Questions",
-            height: 300,
-            width: 400,
+            size: {
+                height: 300,
+                width: 400
+            },
             url: `${window.location.origin}/questions`,
         };
 
-        microsoftTeams.tasks.startTask(taskInfo, (err, questionsJson) => {
-            if (err) {
+        microsoftTeams.dialog.url.open(taskInfo, (res) => {
+            if (res.err) {
                 console.log("Some error occurred in the task module")
                 return
             }
-            const questionsObject = JSON.parse(questionsJson);
-            microsoftTeams.getContext((context) => {
+            const questionsObject = JSON.parse(res.result ? res.result.toString() : "");
+            microsoftTeams.app.getContext().then((context) => {
                 const questDetails: IQuestionSet[] = questionsObject.map((question: any) => {
                     if (question.checked) {
                         // The question details to save.
                         return {
-                            meetingId: context.meetingId!,
+                            meetingId: context.meeting!.id!,
                             question: question.value,
-                            setBy: context.userPrincipalName!,
+                            setBy: context.user?.userPrincipalName!,
                             isDelete: 0
                         };
                     }
@@ -68,22 +73,24 @@ const Questions = (): React.ReactElement => {
     const editQuestionsTaskModule = (editText: string, rowKey: any) => {
         let taskInfo = {
             title: "Questions",
-            height: 300,
-            width: 400,
+            size: {
+                height: 300,
+                width: 400
+            },
             url: `${window.location.origin}/edit?editText=` + editText,
         };
 
-        microsoftTeams.tasks.startTask(taskInfo, (err, question: string) => {
-            if (err) {
+        microsoftTeams.dialog.url.open(taskInfo, (res) => {
+            if (res.err) {
                 console.log("Some error occurred in the task module")
                 return
             }
 
-            microsoftTeams.getContext((context) => {
+            microsoftTeams.app.getContext().then((context) => {
                 const questDetails: IQuestionSet = {
-                    MeetingId: context.meetingId!,
-                    Question: question,
-                    SetBy: context.userPrincipalName!,
+                    MeetingId: context.meeting!.id!,
+                    Question: "",
+                    SetBy: context.user?.userPrincipalName!,
                     IsDelete: 0,
                     QuestionId: rowKey
                 };
@@ -104,8 +111,8 @@ const Questions = (): React.ReactElement => {
 
     // Method to load the questions in the question container.
     const loadQuestions = () => {
-        microsoftTeams.getContext((context) => {
-            getQuestions(context.meetingId!)
+        microsoftTeams.app.getContext().then((context) => {
+            getQuestions(context.meeting!.id!)
                 .then((res) => {
                     console.log(res)
                     const questions = res.data as any[];
@@ -149,7 +156,7 @@ const Questions = (): React.ReactElement => {
         // Setting ratings to show in the UI.
         setRatingsArray(prevItems);
 
-        microsoftTeams.initialize();
+        microsoftTeams.app.initialize();
         loadQuestions();
     }, [])
 

@@ -1,9 +1,12 @@
-import * as React from 'react';
-import { Flex, Card, Button, Text, AddIcon } from '@fluentui/react-northstar'
-import { INoteDetails } from '../../../types/recruitment.types';
 import "../../recruiting-details/recruiting-details.css"
-import { getNotes, saveNote } from '../services/recruiting-detail.service';
+
+import * as React from 'react';
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import { AddIcon, Button, Card, Flex, Text } from '@fluentui/react-northstar'
+import { getNotes, saveNote } from '../services/recruiting-detail.service';
+
+import { INoteDetails } from '../../../types/recruitment.types';
 
 export interface INotesProps {
     currentCandidateEmail: string
@@ -18,23 +21,25 @@ const Notes = (props: INotesProps) => {
     const addNotesTaskModule = () => {
         let taskInfo = {
             title: "Notes",
-            height: 300,
-            width: 400,
+            size: {
+                height: 300,
+                width: 400,
+            },
             url: `${window.location.origin}/addNote`,
         };
 
-        microsoftTeams.tasks.startTask(taskInfo, (err, note) => {
-            if (err) {
+        microsoftTeams.dialog.url.open(taskInfo, (res) => {
+            if (res.err) {
                 console.log("Some error occurred in the task module")
                 return
             }
 
-            microsoftTeams.getContext((context) => {
+            microsoftTeams.app.getContext().then((context) => {
                 // The note details to save.
                 const noteDetails: INoteDetails = {
                     CandidateEmail: props.currentCandidateEmail,
-                    Note: note,
-                    AddedBy: context.userPrincipalName!
+                    Note: res.result ? res.result.toString() : "",
+                    AddedBy: context.user?.userPrincipalName!
                 };
 
                 // API call to save the question to storage.
@@ -62,9 +67,9 @@ const Notes = (props: INotesProps) => {
     }
 
     React.useEffect((): any => {
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            sethostClientType(context.hostClientType);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            sethostClientType(context.app.host);
         });
         loadNotes();
     }, [props.currentCandidateEmail])
@@ -86,8 +91,8 @@ const Notes = (props: INotesProps) => {
                 <hr className="details-separator" />
             </Card.Header>
             <Card.Body>
-                <Flex className={hostClientType == "web" || hostClientType == "desktop" ? "notesContainer" :"notesContainerMobile"} column>
-                    {notes.length == 0 && <Text content="No notes yet" />}
+                <Flex className={hostClientType === "web" || hostClientType === "desktop" ? "notesContainer" : "notesContainerMobile"} column>
+                    {notes.length === 0 && <Text content="No notes yet" />}
                     {
                         notes.length > 0 && notes.map((noteDetail: INoteDetails, index) => {
                             let timestamp = new Date(noteDetail.Timestamp as string);

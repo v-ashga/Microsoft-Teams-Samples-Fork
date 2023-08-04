@@ -1,11 +1,14 @@
-import * as React from 'react';
-import { Flex, Card, Avatar, Text, Header, Button, Label, AddIcon } from '@fluentui/react-northstar'
 import "../../recruiting-details/recruiting-details.css"
+
+import * as React from 'react';
+import * as microsoftTeams from "@microsoft/teams-js";
+
+import { AddIcon, Avatar, Button, Card, Flex, Header, Label, Text } from '@fluentui/react-northstar'
+import { IAssetDetails, ICandidateDetails } from './basic-details.types';
+import { getCandidateDetails, shareAssets } from "../services/recruiting-detail.service"
+
 import LinkedInLogo from '../../../images/linkedin.svg';
 import TwitterLogo from '../../../images/twitter.svg';
-import { getCandidateDetails, shareAssets } from "../services/recruiting-detail.service"
-import { IAssetDetails, ICandidateDetails } from './basic-details.types';
-import * as microsoftTeams from "@microsoft/teams-js";
 
 export interface IBasicDetailsMobileProps {
     selectedIndex: number,
@@ -20,34 +23,36 @@ const BasicDetailsMobile = (props: IBasicDetailsMobileProps) => {
     const openShareTaskModule = () => {
         let taskInfo = {
             title: "Share policy assets",
-            height: 400,
-            width: 400,
+            size: {
+                height: 400,
+                width: 400,
+            },
             url: `${window.location.origin}/shareAssets`,
         };
 
-        microsoftTeams.tasks.startTask(taskInfo, (err, note) => {
-            if (err) {
-                console.log("Some error occurred in the task module")
-                return
+        microsoftTeams.dialog.url.open(taskInfo, (res) => {
+            if (res.err) {
+                console.log("Some error occurred in the task module");
+                return;
             }
 
-            var details = JSON.parse(note);
-            let files = new Array();
-            details.checkedValues.map((item: any) => {
-                if (item.isChecked == true) {
+            var details = res.result as { checkedValues: [], note: string };
+            let files: any[] = [];
+            details && details!.checkedValues!.forEach((item: any) => {
+                if (item.isChecked === true) {
                     files.push(item.name);
                 }
-            })
+            });
 
-            if (note !== undefined) {
+            if (res.result !== undefined) {
                 const assetDetail: IAssetDetails = {
                     message: details.note,
                     files: files,
-                }
+                };
 
                 shareAssets(assetDetail)
                     .then((res) => {
-                        console.log(res)
+                        console.log(res);
                     })
                     .catch((ex) => {
                         console.log("Some error occurred while sharing the assets info");

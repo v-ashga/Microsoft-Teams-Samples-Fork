@@ -2,12 +2,12 @@
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
 const { BotFrameworkAdapter, CardFactory } = require('botbuilder');
 const { BotActivityHandler } = require('./bot/botActivityHandler');
-const candidateHandler = require('./data/candidate')
-const questionsHandler = require('./data/questions')
-const notesHandler = require('./data/notes')
-const feedbackHandler = require('./data/feedback')
+const candidateHandler = require('./data/candidate');
+const questionsHandler = require('./data/questions');
+const notesHandler = require('./data/notes');
+const feedbackHandler = require('./data/feedback');
 const { ConversationRef } = require('./bot/botActivityHandler');
-const cardHelper = require('./cards/cardHelper')
+const cardHelper = require('./cards/cardHelper');
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -19,7 +19,6 @@ const server = express();
 
 // Create bot handlers
 const botActivityHandler = new BotActivityHandler();
-
 
 // Listen for incoming activities and route them to your bot main dialog.
 server.post('/api/messages', (req, res) => {
@@ -51,11 +50,9 @@ adapter.onTurnError = async (context, error) => {
         'TurnError'
     );
 
-     // Uncomment below commented line for local debugging.
-     // await context.sendActivity(`Sorry, it looks like something went wrong. Exception Caught: ${error}`);
+    // Uncomment below commented line for local debugging.
+    // await context.sendActivity(`Sorry, it looks like something went wrong. Exception Caught: ${error}`);
 };
-
-
 
 server.use(cors());
 server.use(express.json());
@@ -77,7 +74,7 @@ server.post('/api/Question/insertQuest', (req, res) => {
 
 server.get('/api/Question', (req, res) => {
     const meetingId = req.query.meetingId;
-    questionsHandler.getQuestions(meetingId, function (response) {
+    questionsHandler.getQuestions(meetingId, function(response) {
         res.send(response);
     });
 });
@@ -102,7 +99,7 @@ server.post('/api/Feedback', (req, res) => {
 
 server.get('/api/Notes', (req, res) => {
     const email = req.query.email;
-    notesHandler.getNotes(email, function (response) {
+    notesHandler.getNotes(email, function(response) {
         res.send(response);
     });
 });
@@ -114,21 +111,21 @@ server.post('/api/Notes', (req, res) => {
 });
 
 server.get('/api/Candidate/file', (req, res) => {
-    let filePath = path.join(__dirname, "./files/test.pdf");
+    const filePath = path.join(__dirname, './files/test.pdf');
     res.download(filePath);
 });
 
 server.post('/api/Notify', async (req, res) => {
     for (const conversationReference of Object.values(ConversationRef)) {
         await adapter.continueConversation(conversationReference, async turnContext => {
-            var actions = new Array();
+            var actions = [];
             req.body.files.map((file) => {
                 actions.push({
-                    type: "Action.OpenUrl",
+                    type: 'Action.OpenUrl',
                     title: file,
-                    url: process.env.BlobUrl +"/" +file
+                    url: process.env.BlobUrl + '/' + file
                 });
-            })
+            });
             const userCard = CardFactory.adaptiveCard(cardHelper.getCardForMessage(req.body.message, actions));
             await turnContext.sendActivity({ attachments: [userCard] });
         });
@@ -139,6 +136,7 @@ server.post('/api/Notify', async (req, res) => {
     res.end();
 });
 
+// eslint-disable-next-line no-undef
 getCardForMessage = (message, actions) => ({
     $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
     body: [
@@ -155,7 +153,5 @@ getCardForMessage = (message, actions) => ({
 });
 
 server.listen(PORT, () => {
-    console.log(`Server listening on http://localhost:${PORT}`);
+    console.log(`Server listening on http://localhost:${ PORT }`);
 });
-
-

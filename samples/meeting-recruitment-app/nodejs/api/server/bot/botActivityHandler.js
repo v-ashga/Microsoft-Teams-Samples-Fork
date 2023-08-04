@@ -13,7 +13,7 @@ class BotActivityHandler extends TeamsActivityHandler {
             const membersAdded = context.activity.membersAdded;
             for (let cnt = 0; cnt < membersAdded.length; cnt++) {
                 if (membersAdded[cnt].id !== context.activity.recipient.id) {
-                    var welcomeText = "Hello and welcome!";
+                    var welcomeText = 'Hello and welcome!';
                     await context.sendActivity(MessageFactory.text(welcomeText));
                 }
             }
@@ -29,7 +29,7 @@ class BotActivityHandler extends TeamsActivityHandler {
         // Activity called when there's a message in channel
         this.onMessage(async (context, next) => {
             var replyText = context.activity.text;
-            await context.sendActivity(MessageFactory.text(`You sent '${replyText}'`));
+            await context.sendActivity(MessageFactory.text(`You sent '${ replyText }'`));
             await next();
         });
     }
@@ -43,7 +43,7 @@ class BotActivityHandler extends TeamsActivityHandler {
     // Method to set conversation data reference that has roster information.
     async addConversationDataReference(context) {
         var members = await TeamsInfo.getMembers(context);
-        conversationDataReferences["members"] = members;
+        conversationDataReferences.members = members;
     }
 }
 

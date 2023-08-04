@@ -1,7 +1,10 @@
-import React from "react";
-import { Flex, Button, Header, TextArea, Checkbox } from '@fluentui/react-northstar'
 import "../../recruiting-details/recruiting-details.css"
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Button, Checkbox, Flex, Header, TextArea } from '@fluentui/react-northstar'
+
+import React from "react";
 
 const ShareAssets = (): React.ReactElement => {
     const [checkboxValues, setCheckboxValues] = React.useState(
@@ -28,19 +31,19 @@ const ShareAssets = (): React.ReactElement => {
     );
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
+        microsoftTeams.app.initialize();
     }, [])
 
     const saveNote = () => {
         let temp = new Array();
-        checkboxValues.checkedValues.map(item => {
+        checkboxValues.checkedValues.forEach(item => {
             if (item.isChecked == true) {
                 temp.push(item.name);
             }
         })
 
         setCheckboxValues({ ...checkboxValues, checkedValues: temp });
-        microsoftTeams.tasks.submitTask(JSON.stringify(checkboxValues));
+        microsoftTeams.dialog.url.submit(JSON.stringify(checkboxValues));
         return true;
     }
 

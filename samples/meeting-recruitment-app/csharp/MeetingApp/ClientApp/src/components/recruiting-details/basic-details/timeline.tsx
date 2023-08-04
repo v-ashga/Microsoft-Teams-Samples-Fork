@@ -1,15 +1,17 @@
-import * as React from 'react';
-import { Flex, Card, Text, NotesIcon } from '@fluentui/react-northstar'
-import * as microsoftTeams from "@microsoft/teams-js";
 import "../../recruiting-details/recruiting-details.css"
+
+import * as React from 'react';
+import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Card, Flex, NotesIcon, Text } from '@fluentui/react-northstar'
 
 const Timeline = () => {
     const [hostClientType, sethostClientType] = React.useState<any>('');
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            sethostClientType(context.hostClientType);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            sethostClientType(context.app.host.clientType);
         });
     }, []);
 
@@ -25,20 +27,20 @@ const Timeline = () => {
                 <Flex gap="gap.small" className="timeline" column>
                     <Flex gap="gap.small" className={hostClientType == "web" || hostClientType == "desktop" ? "timelineContainer" : "timelineContainerMobile"}>
                         <Flex column className="timelineDetail">
-                           <Text content='26 Nov, 2020' weight="bold"/>
-                           <Text content='14:00' />
+                            <Text content='26 Nov, 2020' weight="bold" />
+                            <Text content='14:00' />
                         </Flex>
                         <Flex column className="timelineDetail">
-                           <Text content='Stage' />
-                           <Text content='Shortlisted' weight="bold"/>
+                            <Text content='Stage' />
+                            <Text content='Shortlisted' weight="bold" />
                         </Flex>
                         <Flex column className="timelineDetail">
-                           <Text content='Hiring Team' />
-                           <Text content='Daniela' weight="bold"/>
+                            <Text content='Hiring Team' />
+                            <Text content='Daniela' weight="bold" />
                         </Flex>
                         <Flex column className="timelineDetail">
-                           <Text content='Result' />
-                           <Text content='Shortlisted' weight="bold"/>
+                            <Text content='Result' />
+                            <Text content='Shortlisted' weight="bold" />
                         </Flex>
                         <Flex>
                             <NotesIcon />
@@ -46,20 +48,20 @@ const Timeline = () => {
                     </Flex>
                     <Flex gap="gap.small" className={hostClientType == "web" || hostClientType == "desktop" ? "timelineContainer" : "timelineContainerMobile"}>
                         <Flex column className="timelineDetail">
-                           <Text content='26 Nov, 2020' weight="bold"/>
-                           <Text content='14:00' />
+                            <Text content='26 Nov, 2020' weight="bold" />
+                            <Text content='14:00' />
                         </Flex>
                         <Flex column className="timelineDetail">
-                           <Text content='Stage' />
-                           <Text content='Round 1' weight="bold"/>
+                            <Text content='Stage' />
+                            <Text content='Round 1' weight="bold" />
                         </Flex>
                         <Flex column className="timelineDetail">
-                           <Text content='Hiring Team' />
-                           <Text content='Ray' weight="bold"/>
+                            <Text content='Hiring Team' />
+                            <Text content='Ray' weight="bold" />
                         </Flex>
                         <Flex column className="timelineDetail">
-                           <Text content='Result' />
-                           <Text content='Hire' weight="bold"/>
+                            <Text content='Result' />
+                            <Text content='Hire' weight="bold" />
                         </Flex>
                         <Flex>
                             <NotesIcon />

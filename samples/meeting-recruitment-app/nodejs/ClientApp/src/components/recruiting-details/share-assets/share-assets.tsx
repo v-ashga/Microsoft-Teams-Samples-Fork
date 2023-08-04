@@ -1,7 +1,10 @@
-import React from "react";
-import { Flex, Button, Header, TextArea, Checkbox } from '@fluentui/react-northstar'
 import "../../recruiting-details/recruiting-details.css"
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Button, Checkbox, Flex, Header, TextArea } from '@fluentui/react-northstar'
+
+import React from "react";
 
 const ShareAssets = (): React.ReactElement => {
     const [checkboxValues, setCheckboxValues] = React.useState(
@@ -28,32 +31,32 @@ const ShareAssets = (): React.ReactElement => {
     );
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
+        microsoftTeams.app.initialize();
     }, [])
 
     const saveNote = () => {
-        let temp = new Array();
-        checkboxValues.checkedValues.map(item => {
-            if (item.isChecked == true) {
+        let temp: any[] = [];
+        checkboxValues.checkedValues.forEach((item) => {
+            if (item.isChecked === true) {
                 temp.push(item.name);
             }
         })
 
         setCheckboxValues({ ...checkboxValues, checkedValues: temp });
-        microsoftTeams.tasks.submitTask(JSON.stringify(checkboxValues));
+        microsoftTeams.dialog.url.submit(JSON.stringify(checkboxValues));
         return true;
     }
 
     const onCheckboxChange = (event: any, data: any, index: number) => {
         let newArray = [...checkboxValues.checkedValues];
         let label = "";
-        if (index == 1) {
+        if (index === 1) {
             label = "FAQ.pdf";
         }
-        else if (index == 2) {
+        else if (index === 2) {
             label = "Docs.docx";
         }
-        else if (index == 3) {
+        else if (index === 3) {
             label = "T&C.docx";
         }
         newArray[index - 1] = { id: index, name: label, isChecked: data.checked };
@@ -78,7 +81,7 @@ const ShareAssets = (): React.ReactElement => {
                         className="shareAssetsText" />
                 </Flex>
                 <Flex gap="gap.smaller" hAlign="end">
-                    <Button content="Cancel" secondary onClick={() => microsoftTeams.tasks.submitTask(undefined)} />
+                    <Button content="Cancel" secondary onClick={() => microsoftTeams.dialog.url.submit(undefined)} />
                     <Button content="Share" primary onClick={saveNote} />
                 </Flex>
             </Flex>

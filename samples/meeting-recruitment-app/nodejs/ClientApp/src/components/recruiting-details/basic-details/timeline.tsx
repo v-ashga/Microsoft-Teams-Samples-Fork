@@ -1,15 +1,17 @@
-import * as React from 'react';
-import { Flex, Card, Text, NotesIcon } from '@fluentui/react-northstar'
-import * as microsoftTeams from "@microsoft/teams-js";
 import "../../recruiting-details/recruiting-details.css"
+
+import * as React from 'react';
+import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Card, Flex, NotesIcon, Text } from '@fluentui/react-northstar'
 
 const Timeline = () => {
     const [hostClientType, sethostClientType] = React.useState<any>('');
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            sethostClientType(context.hostClientType);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            sethostClientType(context.app.host.clientType);
         });
     }, []);
 
@@ -23,7 +25,7 @@ const Timeline = () => {
             </Card.Header>
             <Card.Body>
                 <Flex gap="gap.small" className="timeline" column>
-                    <Flex gap="gap.small" className={hostClientType == "web" || hostClientType == "desktop" ? "timelineContainer" : "timelineContainerMobile"}>
+                    <Flex gap="gap.small" className={hostClientType === "web" || hostClientType === "desktop" ? "timelineContainer" : "timelineContainerMobile"}>
                         <Flex column className="timelineDetail">
                             <Text content='26 Nov, 2020' weight="bold" />
                             <Text content='14:00' />
@@ -44,7 +46,7 @@ const Timeline = () => {
                             <NotesIcon />
                         </Flex>
                     </Flex>
-                    <Flex gap="gap.small" className={hostClientType == "web" || hostClientType == "desktop" ? "timelineContainer" : "timelineContainerMobile"}>
+                    <Flex gap="gap.small" className={hostClientType === "web" || hostClientType === "desktop" ? "timelineContainer" : "timelineContainerMobile"}>
                         <Flex column className="timelineDetail">
                             <Text content='26 Nov, 2020' weight="bold" />
                             <Text content='14:00' />

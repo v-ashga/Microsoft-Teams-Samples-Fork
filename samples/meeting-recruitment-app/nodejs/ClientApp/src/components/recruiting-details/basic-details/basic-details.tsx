@@ -1,22 +1,25 @@
+import "../../recruiting-details/recruiting-details.css"
+
 import * as React from 'react';
+import * as microsoftTeams from "@microsoft/teams-js";
+
 import {
-    Flex,
-    Card,
-    Button,
     Avatar,
-    Text,
-    ChatIcon,
-    CallVideoIcon,
+    Button,
     CallIcon,
+    CallVideoIcon,
+    Card,
+    ChatIcon,
+    Dropdown,
     EmailIcon,
+    Flex,
     PaperclipIcon,
     PopupIcon,
-    Dropdown
+    Text
 } from '@fluentui/react-northstar'
-import "../../recruiting-details/recruiting-details.css"
-import { getCandidateDetails } from "../services/recruiting-detail.service"
+
 import { ICandidateDetails } from './basic-details.types';
-import * as microsoftTeams from "@microsoft/teams-js";
+import { getCandidateDetails } from "../services/recruiting-detail.service"
 
 export interface IBasicDetailsProps {
     setSelectedCandidateIndex: (index: number, email: string) => void,
@@ -36,17 +39,17 @@ const BasicDetails = (props: IBasicDetailsProps) => {
     }
 
     const startCall = () => {
-        microsoftTeams.executeDeepLink("https://teams.microsoft.com/l/call/0/0?users="+candidateDetails[selectedIndex]?.Email);
+        microsoftTeams.app.openLink("https://teams.microsoft.com/l/call/0/0?users=" + candidateDetails[selectedIndex]?.Email);
     }
 
     const startChat = () => {
-        microsoftTeams.executeDeepLink("https://teams.microsoft.com/l/chat/0/0?users="+candidateDetails[selectedIndex]?.Email);
+        microsoftTeams.app.openLink("https://teams.microsoft.com/l/chat/0/0?users=" + candidateDetails[selectedIndex]?.Email);
     }
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            sethostClientType(context.hostClientType);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            sethostClientType(context.app.host.clientType);
         });
 
         getCandidateDetails()
@@ -91,8 +94,8 @@ const BasicDetails = (props: IBasicDetailsProps) => {
                         </Flex>
                     </Flex>
                     <Flex >
-                        <Button icon={<ChatIcon />} iconOnly text title="Message" onClick={startChat}/>
-                        <Button icon={<CallVideoIcon />} iconOnly text title="Call" onClick={startCall}/>
+                        <Button icon={<ChatIcon />} iconOnly text title="Message" onClick={startChat} />
+                        <Button icon={<CallVideoIcon />} iconOnly text title="Call" onClick={startCall} />
                     </Flex>
                 </Flex>
                 <hr className="details-separator" />
@@ -107,7 +110,7 @@ const BasicDetails = (props: IBasicDetailsProps) => {
                                 <Text content={candidateDetails[selectedIndex]?.Email} size="small" />
                             </Flex>
                             <Flex>
-                                <Button icon={<CallIcon size="medium" />} iconOnly text title="Call" size="small" onClick={startCall}/>
+                                <Button icon={<CallIcon size="medium" />} iconOnly text title="Call" size="small" onClick={startCall} />
                                 <Text content={candidateDetails[selectedIndex]?.Mobile} size="small" />
                             </Flex>
                         </Flex>

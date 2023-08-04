@@ -1,15 +1,18 @@
-import React from 'react';
-import * as microsoftTeams from "@microsoft/teams-js";
-import { Flex, Menu, Button, Text } from '@fluentui/react-northstar'
 import "../recruiting-details/recruiting-details.css"
-import BasicDetails from "./basic-details/basic-details"
-import Timeline from "./basic-details/timeline"
-import Notes from "./basic-details/notes"
-import QuestionsMobile from './questions/questions-mobile';
-import BasicDetailsMobile from './basic-details/basic-details-mobile';
-import Questions from './basic-details/questions';
-import { getQuestions, saveFeedback, download } from "./services/recruiting-detail.service";
+
+import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Button, Flex, Menu, Text } from '@fluentui/react-northstar'
 import { IFeedbackDetails, IQuestionDetails } from '../../types/recruitment.types';
+import { download, getQuestions, saveFeedback } from "./services/recruiting-detail.service";
+
+import BasicDetails from "./basic-details/basic-details"
+import BasicDetailsMobile from './basic-details/basic-details-mobile';
+import Notes from "./basic-details/notes"
+import Questions from './basic-details/questions';
+import QuestionsMobile from './questions/questions-mobile';
+import React from 'react';
+import Timeline from "./basic-details/timeline"
 
 // Main container component for the app
 const RecruitingDetails = () => {
@@ -40,7 +43,7 @@ const RecruitingDetails = () => {
     // Method to set the rating for a question.
     const setRating = (event: any) => {
         const currentQuestions = [...questionDetails];
-        const questToUpdate = currentQuestions.find(quest => quest.RowKey == event.currentTarget.id)!;
+        const questToUpdate = currentQuestions.find(quest => quest.RowKey === event.currentTarget.id)!;
         questToUpdate.Rating = event.target.innerText;
         setQuestionDetails(currentQuestions);
     }
@@ -48,7 +51,7 @@ const RecruitingDetails = () => {
     // Method to set comment on a question.
     const saveComment = (rowKey: string) => {
         const currentQuestions = [...questionDetails];
-        const questToUpdate = currentQuestions.find(quest => quest.RowKey == rowKey)!;
+        const questToUpdate = currentQuestions.find(quest => quest.RowKey === rowKey)!;
         const doc: any = document.getElementById(rowKey + "_textarea");
         questToUpdate.Comment = doc.value;
         setQuestionDetails(currentQuestions);
@@ -56,15 +59,15 @@ const RecruitingDetails = () => {
 
     const setShowAddComment = (rowKey: string, isShow: boolean) => {
         const currentQuestions = [...questionDetails];
-        const questToUpdate = currentQuestions.find(quest => quest.RowKey == rowKey)!;
+        const questToUpdate = currentQuestions.find(quest => quest.RowKey === rowKey)!;
         questToUpdate.ShowAddComment = isShow ? true : false;
         setQuestionDetails(currentQuestions);
     }
 
     // Method to load the questions in the question container.
     const loadQuestions = () => {
-        microsoftTeams.getContext((context) => {
-            getQuestions(context.meetingId!)
+        microsoftTeams.app.getContext().then((context) => {
+            getQuestions(context.meeting?.id!)
                 .then((res) => {
                     console.log(res);
                     const questions = res.data as IQuestionDetails[];
@@ -94,12 +97,12 @@ const RecruitingDetails = () => {
             }
         })
         const feedbackJson = JSON.stringify(feedback);
-        microsoftTeams.getContext((context) => {
+        microsoftTeams.app.getContext().then((context) => {
             const feedbackDetails: IFeedbackDetails = {
                 MeetingId: questionDetails[0].MeetingId,
                 CandidateEmail: currentCandidateEmail,
                 FeedbackJson: feedbackJson,
-                Interviewer: context?.userPrincipalName!
+                Interviewer: context?.user?.userPrincipalName!
             }
             saveFeedback(feedbackDetails)
                 .then((res) => {
@@ -133,10 +136,10 @@ const RecruitingDetails = () => {
     }
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            setframeContext(context.frameContext);
-            sethostClientType(context.hostClientType);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            setframeContext(context.page.frameContext);
+            sethostClientType(context.app.host.clientType);
         });
         loadQuestions();
     }, [])
@@ -145,22 +148,22 @@ const RecruitingDetails = () => {
     return (
         <>
             {/* Content for stage view */}
-            <Flex hidden={frameContext != "content"} gap="gap.small" padding="padding.medium" className="container">
-                <Flex column gap="gap.small" padding="padding.medium" className={hostClientType == "web" || hostClientType == "desktop"? "detailsContainer" :"detailsContainerMobile"}>
+            <Flex hidden={frameContext !== "content"} gap="gap.small" padding="padding.medium" className="container">
+                <Flex column gap="gap.small" padding="padding.medium" className={hostClientType === "web" || hostClientType === "desktop" ? "detailsContainer" : "detailsContainerMobile"}>
                     <BasicDetails setSelectedCandidateIndex={setSelectedCandidateIndex} downloadFile={downloadFile} />
                     <Timeline />
                     <Notes currentCandidateEmail={currentCandidateEmail} />
-                    <Flex hidden={hostClientType == "web" || hostClientType == "desktop"} className="questionsContainerMobile">
+                    <Flex hidden={hostClientType === "web" || hostClientType === "desktop"} className="questionsContainerMobile">
                         <Questions />
                     </Flex>
                 </Flex>
-                <Flex hidden={hostClientType != "web" && hostClientType != "desktop"} column gap="gap.small" padding="padding.medium" className="questionsContainer">
+                <Flex hidden={hostClientType !== "web" && hostClientType !== "desktop"} column gap="gap.small" padding="padding.medium" className="questionsContainer">
                     <Questions />
                 </Flex>
             </Flex>
 
             {/* Content for sidepanel/mobile view */}
-            <Flex hidden={frameContext != "sidePanel"} gap="gap.small" className={hostClientType == "web" || hostClientType == "desktop" ? "container-sidePanel":"container-mobile"} column>
+            <Flex hidden={frameContext !== "sidePanel"} gap="gap.small" className={hostClientType === "web" || hostClientType === "desktop" ? "container-sidePanel" : "container-mobile"} column>
                 <Menu
                     defaultActiveIndex={0}
                     items={mobileMenuItems}
@@ -171,8 +174,8 @@ const RecruitingDetails = () => {
                 <Flex column gap="gap.small">
                     <>
                         {!activeMobileMenu && <BasicDetailsMobile selectedIndex={selectedIndex} downloadFile={downloadFile} />}
-                        {feedbackSubmitted && activeMobileMenu == 1 && <Text>Feedback submitted!</Text>}
-                        {!feedbackSubmitted && questionDetails.length > 0 && activeMobileMenu == 1 &&
+                        {feedbackSubmitted && activeMobileMenu === 1 && <Text>Feedback submitted!</Text>}
+                        {!feedbackSubmitted && questionDetails.length > 0 && activeMobileMenu === 1 &&
                             <Flex column gap="gap.smaller">
                                 <Flex column gap="gap.smaller" className="questionCardsMobile">
                                     <QuestionsMobile

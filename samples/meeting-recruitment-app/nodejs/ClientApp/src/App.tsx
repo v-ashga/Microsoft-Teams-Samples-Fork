@@ -1,19 +1,22 @@
-import React, { Suspense } from 'react';
 import './App.css';
+
+import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Provider, teamsDarkTheme, teamsHighContrastTheme, teamsTheme } from '@fluentui/react-northstar'
+import React, { Suspense } from 'react';
 import {
-  BrowserRouter as Router,
   Route,
+  BrowserRouter as Router,
   Switch
 } from 'react-router-dom';
-import * as microsoftTeams from "@microsoft/teams-js";
-import { TeamsThemeContext, getContext, ThemeStyle } from 'msteams-ui-components-react';
-import { Provider, teamsTheme, teamsDarkTheme, teamsHighContrastTheme } from '@fluentui/react-northstar'
-import Configuration from './components/configuration';
-import RecruitingDetails from './components/recruiting-details/recruiting-details';
-import AddQuestions from './components/recruiting-details/questions/add-questions';
+import { TeamsThemeContext, ThemeStyle, getContext } from 'msteams-ui-components-react';
+
 import AddNotes from './components/recruiting-details/notes/add-notes';
-import ShareAssets from './components/recruiting-details/share-assets/share-assets';
+import AddQuestions from './components/recruiting-details/questions/add-questions';
+import Configuration from './components/configuration';
 import EditQuestion from './components/recruiting-details/questions/edit-question';
+import RecruitingDetails from './components/recruiting-details/recruiting-details';
+import ShareAssets from './components/recruiting-details/share-assets/share-assets';
 
 export interface IAppState {
   theme: string;
@@ -31,16 +34,16 @@ class App extends React.Component<{}, IAppState> {
   }
 
   public componentDidMount() {
-    microsoftTeams.initialize();
-    microsoftTeams.getContext((context) => {
-      let theme = context.theme || "";
+    microsoftTeams.app.initialize();
+    microsoftTeams.app.getContext().then((context) => {
+      let theme = context.app.theme || "";
       this.updateTheme(theme);
       this.setState({
         theme: theme
       });
     });
 
-    microsoftTeams.registerOnThemeChangeHandler((theme) => {
+    microsoftTeams.app.registerOnThemeChangeHandler((theme) => {
       this.updateTheme(theme);
       this.setState({
         theme: theme,

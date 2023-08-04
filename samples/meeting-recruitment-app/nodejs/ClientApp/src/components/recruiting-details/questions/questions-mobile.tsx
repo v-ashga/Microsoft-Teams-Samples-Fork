@@ -1,7 +1,9 @@
-import React from "react";
-import { Flex, Card, Button, Text, AddIcon, TextArea } from '@fluentui/react-northstar'
 import "../../recruiting-details/recruiting-details.css"
+
+import { AddIcon, Button, Card, Flex, Text, TextArea } from '@fluentui/react-northstar'
+
 import { IQuestionDetails } from "../../../types/recruitment.types";
+import React from "react";
 
 export interface IQuestionProps {
     questionsSet: IQuestionDetails[],
@@ -43,25 +45,25 @@ const QuestionsMobile = (props: IQuestionProps): React.ReactElement => {
 
                                     <Flex>
                                         <Button
-                                        text
-                                        size="small"
-                                        icon={<AddIcon size="small" />}
-                                        content="Add comment"
-                                        iconPosition="before"
-                                        className="add-button"
-                                        hidden={questionDetail.ShowAddComment}
-                                        onClick={() => { props.setShowAddComment(questionDetail.RowKey, true) }} />
+                                            text
+                                            size="small"
+                                            icon={<AddIcon size="small" />}
+                                            content="Add comment"
+                                            iconPosition="before"
+                                            className="add-button"
+                                            hidden={questionDetail.ShowAddComment}
+                                            onClick={() => { props.setShowAddComment(questionDetail.RowKey, true) }} />
                                     </Flex>
 
                                     <Flex gap="gap.small" column hidden={!questionDetail.ShowAddComment}>
                                         <Text content="Comment" />
-                                        <Text size="smaller" content={questionDetail.Comment} hidden={questionDetail.Comment == ''} />
+                                        <Text size="smaller" content={questionDetail.Comment} hidden={questionDetail.Comment === ''} />
                                         <TextArea
                                             placeholder="Add comment here..."
                                             className="add-comment-textarea"
                                             id={questionDetail.RowKey + `_textarea`}
-                                            hidden={questionDetail.ShowAddComment && questionDetail.Comment != ''} />
-                                        <Flex gap="gap.smaller" hidden={questionDetail.Comment != ''}>
+                                            hidden={questionDetail.ShowAddComment && questionDetail.Comment !== ''} />
+                                        <Flex gap="gap.smaller" hidden={questionDetail.Comment !== ''}>
                                             <Button
                                                 size="small"
                                                 content="Discard"

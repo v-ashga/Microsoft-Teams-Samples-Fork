@@ -1,29 +1,30 @@
-import React from 'react';
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import React from 'react';
 
 const Configuration = () => {
     const [tabId, setTabId] = React.useState('');
 
     React.useEffect(() => {
-        //microsoftTeams.initialize();
+        //microsoftTeams.app.initialize();
 
-        //microsoftTeams.getContext(async (context: microsoftTeams.Context) => {
-        //    setTabId(context.entityId)
+        //microsoftTeams.app.getContext().then(async (context: microsoftTeams.app.Context) => {
+        //    setTabId(context.page.id)
         //});
 
-        //microsoftTeams.settings.registerOnSaveHandler(async (saveEvent: microsoftTeams.settings.SaveEvent) => {
-        //    microsoftTeams.settings.setSettings({
+        //microsoftTeams.pages.config.registerOnSaveHandler(async (saveEvent: microsoftTeams.pages.config.SaveEvent) => {
+        //    microsoftTeams.pages.config.setConfig({
         //        entityId: tabId,
         //        contentUrl: `${window.location.origin}/details`,
         //        suggestedDisplayName: 'Recruiting',
         //    });
         //    saveEvent.notifySuccess();
         //});
-        //microsoftTeams.settings.setValidityState(true);
+        //microsoftTeams.pages.config.setValidityState(true);
 
         microsoftTeams.app.initialize().then(() => {
-            microsoftTeams.getContext((context: any) => {
-                setTabId(context.entityId)
+            microsoftTeams.app.getContext().then((context: any) => {
+                setTabId(context.page.id)
             })
 
             microsoftTeams.pages.config.registerOnSaveHandler(function (saveEvent) {
