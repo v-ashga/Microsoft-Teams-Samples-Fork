@@ -12,7 +12,7 @@
             Topic: '@Model.Topic',
             Feedback: document.querySelector('input[name="inputVal"]:checked').value
         }
-        microsoftTeams.tasks.submitTask(feedbackInfo);
+        microsoftTeams.dialog.url.submit(feedbackInfo);
         return true;
     }
 </script>
