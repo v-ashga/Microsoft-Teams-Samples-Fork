@@ -11,13 +11,13 @@
 <button onclick="return closeView()">Close</button>
 
 <script type="text/javascript">
-    microsoftTeams.initialize();
+    microsoftTeams.app.initialize();
     function closeView() {
         var razorData = {
             Title: "@Title",
             DisplayData: "@DisplayMessage"
         }
-        microsoftTeams.tasks.submitTask(razorData);
+        microsoftTeams.dialog.url.submit(razorData);
         return true;
     }
 </script>

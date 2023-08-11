@@ -1,16 +1,20 @@
 <html>
 <head>
     <title>Microsoft Teams ME Action WebView</title>
-    <script src="https://statics.teams.microsoft.com/sdk/v1.7.0/js/MicrosoftTeams.min.js"></script>
+    <script
+        src="https://res.cdn.office.net/teams-js/2.13.0/js/MicrosoftTeams.min.js"
+        integrity="sha384-F9Iwc2j9qTKP1PITJeEV0OOS8NDzEUzrP//Fz0t2gzapTMPvNjhYdQjF0idJOuG3"
+        crossorigin="anonymous"
+    ></script>
     <script>
-    microsoftTeams.initialize();
+    microsoftTeams.app.initialize();
         function validateForm() {
             let empInfo = {
                 EmpId: document.forms["empForm"]["empId"].value,
                 EmpName: document.forms["empForm"]["empName"].value,
                 EmpEmail: document.forms["empForm"]["empEmail"].value
             }
-            microsoftTeams.tasks.submitTask(empInfo);
+            microsoftTeams.dialog.url.submit(empInfo);
             return true;
         }
     </script>

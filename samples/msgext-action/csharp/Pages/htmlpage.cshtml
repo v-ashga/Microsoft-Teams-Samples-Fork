@@ -18,13 +18,13 @@
 </head>
 <body>
     <script>
-        microsoftTeams.initialize();
+        microsoftTeams.app.initialize();
         function validateForm() {
             var empLogIn = {
                 UserName: document.forms["userLog"]["userName"].value,
                 UserPwd: document.forms["userLog"]["userPwd"].value,
             }
-            microsoftTeams.tasks.submitTask(empLogIn);
+            microsoftTeams.dialog.url.submit(empLogIn);
             return true;
         }
     </script>
