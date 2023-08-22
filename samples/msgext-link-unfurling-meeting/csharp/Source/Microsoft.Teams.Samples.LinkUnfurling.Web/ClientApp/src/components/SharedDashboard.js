@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import React from "react";
 import "./App.css";
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import React from "react";
 
 /**
  * Displays shared dashboard
@@ -11,8 +13,8 @@ import * as microsoftTeams from "@microsoft/teams-js";
 class SharedDashboard extends React.Component {
   componentDidMount() {
     // Initialize the Microsoft Teams SDK and notify success.
-    microsoftTeams.initialize(() =>
-      microsoftTeams.appInitialization.notifySuccess()
+    microsoftTeams.app.initialize(() =>
+      microsoftTeams.app.notifySuccess()
     );
   }
 

@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import React from "react";
 import "./App.css";
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import React from "react";
 
 /**
  * This component is used to display tab configuration.
@@ -11,17 +13,17 @@ import * as microsoftTeams from "@microsoft/teams-js";
 class Config extends React.Component {
   componentDidMount() {
     // Initialize the Microsoft Teams SDK
-    microsoftTeams.initialize();
+    microsoftTeams.app.initialize();
 
     // Notify app initialization completion.
-    microsoftTeams.appInitialization.notifySuccess();
+    microsoftTeams.app.notifySuccess();
 
     // No configuration supported, so set validity state to true.
-    microsoftTeams.settings.setValidityState(true);
+    microsoftTeams.pages.config.setValidityState(true);
 
     // Save settings..
-    microsoftTeams.settings.registerOnSaveHandler((saveEvent) => {
-      microsoftTeams.settings.setSettings({
+    microsoftTeams.pages.config.registerOnSaveHandler((saveEvent) => {
+      microsoftTeams.pages.config.setConfig({
         websiteUrl: `${process.env.REACT_APP_BASE_URL}`,
         contentUrl: `${process.env.REACT_APP_BASE_URL}/SharedDashboard`,
         entityId: "",

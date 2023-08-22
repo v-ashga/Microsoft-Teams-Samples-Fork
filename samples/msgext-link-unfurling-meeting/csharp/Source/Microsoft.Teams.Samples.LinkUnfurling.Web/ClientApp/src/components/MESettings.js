@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import React from "react";
 import "./App.css";
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import React from "react";
 
 /**
  * Message extension settings.
@@ -18,10 +20,10 @@ class MESettings extends React.Component {
 
   componentDidMount() {
     // Initialize the Microsoft Teams SDK
-    microsoftTeams.initialize();
+    microsoftTeams.app.initialize();
 
     // Notify app initialization completion.
-    microsoftTeams.appInitialization.notifySuccess();
+    microsoftTeams.app.notifySuccess();
   }
 
   onSignout() {

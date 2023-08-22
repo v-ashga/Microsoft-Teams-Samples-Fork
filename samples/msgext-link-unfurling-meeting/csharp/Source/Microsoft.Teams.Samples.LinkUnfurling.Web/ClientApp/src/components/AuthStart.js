@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import React from "react";
-
-import crypto from "crypto";
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import React from "react";
+import crypto from "crypto";
 
 /**
  * This component is used to redirect the user to the Azure authorization endpoint from a popup
@@ -12,11 +12,11 @@ import * as microsoftTeams from "@microsoft/teams-js";
 class AuthStart extends React.Component {
   componentDidMount() {
     // Initialize the Microsoft Teams SDK
-    microsoftTeams.initialize();
+    microsoftTeams.app.initialize();
 
     // Get the user context in order to extract the tenant ID
-    microsoftTeams.getContext((context, error) => {
-      let tenant = context["tid"]; // Tenant ID of the logged in user
+    microsoftTeams.app.getContext().then((context, error) => {
+      let tenant = context.user.tenat.id; // Tenant ID of the logged in user
       let client_id = process.env.REACT_APP_AZURE_APP_REGISTRATION_ID; // Client ID of the Azure AD app registration ( may be from different tenant for multitenant apps)
       let graph_scopes = process.env.REACT_APP_GRAPH_SCOPES;
 

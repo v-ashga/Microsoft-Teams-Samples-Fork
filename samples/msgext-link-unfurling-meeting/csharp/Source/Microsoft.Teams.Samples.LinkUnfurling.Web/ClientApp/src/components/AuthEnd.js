@@ -1,16 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import React from "react";
 import "./App.css";
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import React from "react";
 
 /**
  * This component is loaded when the Azure implicit grant flow has completed.
  */
 class AuthEnd extends React.Component {
   componentDidMount() {
-    microsoftTeams.initialize();
+    microsoftTeams.app.initialize();
 
     // The Azure implicit grant flow injects the result into the window.location.hash object. Parse it to find the results.
     let hashParams = this.getHashParameters();

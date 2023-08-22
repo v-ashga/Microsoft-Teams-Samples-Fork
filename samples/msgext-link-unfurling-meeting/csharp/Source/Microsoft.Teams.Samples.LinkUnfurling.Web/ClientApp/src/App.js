@@ -1,24 +1,24 @@
+import * as microsoftTeams from "@microsoft/teams-js";
+
 import React, { useEffect, useState } from "react";
 import { Route, Switch } from "react-router";
-
-import { Home } from "./components/Home";
-import AuthEnd from "./components/AuthEnd";
-import AuthStart from "./components/AuthStart";
-import ReviewInMeeting from "./components/ReviewInMeeting";
-import Privacy from "./components/Privacy";
-import TermsOfUse from "./components/TermsOfUse";
-import Resource from "./components/Resource";
-import SharedDashboard from "./components/SharedDashboard";
-import Config from "./components/Config";
-import MESettings from "./components/MESettings";
-import { Provider } from "@fluentui/react-northstar";
-
-import * as microsoftTeams from "@microsoft/teams-js";
 import {
   teamsDarkTheme,
   teamsHighContrastTheme,
   teamsTheme,
 } from "@fluentui/react-northstar";
+
+import AuthEnd from "./components/AuthEnd";
+import AuthStart from "./components/AuthStart";
+import Config from "./components/Config";
+import { Home } from "./components/Home";
+import MESettings from "./components/MESettings";
+import Privacy from "./components/Privacy";
+import { Provider } from "@fluentui/react-northstar";
+import Resource from "./components/Resource";
+import ReviewInMeeting from "./components/ReviewInMeeting";
+import SharedDashboard from "./components/SharedDashboard";
+import TermsOfUse from "./components/TermsOfUse";
 
 export const App = () => {
   const [theme, setTheme] = useState(teamsTheme);
@@ -38,11 +38,11 @@ export const App = () => {
   };
 
   useEffect(() => {
-    microsoftTeams.initialize(() => {
-      microsoftTeams.getContext((context) => {
-        themeChangeHandler(context.theme);
+    microsoftTeams.app.initialize(() => {
+      microsoftTeams.app.getContext().then((context) => {
+        themeChangeHandler(context.app.theme);
       });
-      microsoftTeams.registerOnThemeChangeHandler(themeChangeHandler);
+      microsoftTeams.app.registerOnThemeChangeHandler(themeChangeHandler);
     });
   });
 

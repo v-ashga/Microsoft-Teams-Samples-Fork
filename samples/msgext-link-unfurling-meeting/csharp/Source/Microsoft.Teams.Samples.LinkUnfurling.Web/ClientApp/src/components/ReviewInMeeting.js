@@ -1,6 +1,9 @@
-﻿import React, { Component } from "react";
-import "./App.css";
+﻿import "./App.css";
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import React, { Component } from "react";
+
 import { Loader } from "@fluentui/react-northstar";
 
 export class ReviewInMeeting extends Component {
@@ -65,14 +68,14 @@ export class ReviewInMeeting extends Component {
 
   initialize() {
     // Initialize the Microsoft Teams SDK
-    microsoftTeams.initialize(() => {
+    microsoftTeams.app.initialize(() => {
       // Get the user context from Teams and set it in the state
-      microsoftTeams.getContext((context, error) => {
+      microsoftTeams.app.getContext().then((context, error) => {
         this.setState({ context: context });
       });
 
       // Notify sucess.
-      microsoftTeams.appInitialization.notifySuccess();
+      microsoftTeams.app.notifySuccess();
     });
   }
 
@@ -156,10 +159,10 @@ export class ReviewInMeeting extends Component {
 
   executeLinkAndClose(deepLink) {
     // Execute deeplink.
-    microsoftTeams.executeDeepLink(deepLink);
+    microsoftTeams.app.openLink(deepLink);
 
     // Close task module.
-    microsoftTeams.tasks.submitTask(undefined);
+    microsoftTeams.dialog.url.submit(undefined);
   }
 
   // Show a popup dialogue prompting the user to consent to the required API permissions. This opens AuthStart.js.
