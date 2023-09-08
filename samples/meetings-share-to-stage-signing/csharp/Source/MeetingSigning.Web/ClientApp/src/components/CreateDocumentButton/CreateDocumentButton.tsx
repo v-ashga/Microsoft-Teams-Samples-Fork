@@ -1,11 +1,7 @@
-import { Alert, Button, Flex } from '@fluentui/react-northstar';
-import { useState } from 'react';
-import { useMutation } from 'react-query';
-import { TaskInfo } from '@microsoft/teams-js';
-import * as microsoftTeams from '@microsoft/teams-js';
 import * as ACData from 'adaptivecards-templating';
-import { CreateDocumentCard } from 'adaptive-cards';
-import { createDocument } from 'api/documentApi';
+import * as microsoftTeams from '@microsoft/teams-js';
+
+import { Alert, Button, Flex } from '@fluentui/react-northstar';
 import {
   ApiErrorCode,
   Document,
@@ -14,7 +10,13 @@ import {
   User,
 } from 'models';
 import { apiRetryQuery, isApiErrorCode } from 'utils/UtilsFunctions';
+
 import { ConsentRequest } from 'components/ConsentRequest';
+import { CreateDocumentCard } from 'adaptive-cards';
+import { TaskInfo } from '@microsoft/teams-js';
+import { createDocument } from 'api/documentApi';
+import { useMutation } from 'react-query';
+import { useState } from 'react';
 
 type Choice = {
   name: string;
@@ -100,11 +102,11 @@ export function CreateDocumentButton({
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const createDocumentsSubmitHandler = (error: string, resultObj: any) => {
-      if (error !== null) {
-        console.log(`Document handler - error: '${error}'`);
+    const createDocumentsSubmitHandler = (resultObj: any) => {
+      if (resultObj.error !== null) {
+        console.log(`Document handler - error: '${resultObj.error}'`);
       } else if (resultObj !== undefined) {
-        let result = resultObj;
+        let result = resultObj.result;
 
         // There is a bug for task module cards for Anonymous Users that returns a stringified
         // object to the callback instead of the object. So if the result is a string parse it
@@ -150,7 +152,7 @@ export function CreateDocumentButton({
     };
 
     // tasks.startTasks is deprecated, but the 2.0 of SDK's dialog.open does not support opening adaptive cards yet.
-    microsoftTeams.tasks.startTask(
+    microsoftTeams.dialog.adaptiveCard.open(
       createTaskInfo(documentsCard),
       createDocumentsSubmitHandler,
     );

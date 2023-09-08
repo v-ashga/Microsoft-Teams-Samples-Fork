@@ -1,8 +1,10 @@
-import { Text, Flex, Loader } from '@fluentui/react-northstar';
 import * as microsoftTeams from '@microsoft/teams-js';
+
+import { Flex, Loader, Text } from '@fluentui/react-northstar';
+
 import { IFluidContainer } from 'fluid-framework';
-import { useMemo } from 'react';
 import styles from './LiveSharePage.module.css';
+import { useMemo } from 'react';
 
 export interface LiveSharePageProps {
   context: microsoftTeams.app.Context;
@@ -25,8 +27,7 @@ export const LiveSharePage = ({
   userIsAnonymous,
 }: LiveSharePageProps) => {
   const loadText = useMemo(() => {
-    if (userIsAnonymous)
-    {
+    if (userIsAnonymous) {
       // Anonymous users do not have an AzureAD account are not supported by Live Share, so skip waiting for it to load
       return undefined;
     }
