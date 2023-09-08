@@ -1,13 +1,16 @@
-﻿import * as React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
-import { Flex, Image, Text, Video, Button } from "@fluentui/react-northstar";
+﻿import "./user-dashboard.scss";
+
+import * as React from "react";
 import * as microsoftTeams from "@microsoft/teams-js";
-import IArticle from "../../models/article";
-import { ItemType } from "../../models/item-type";
-import "./user-dashboard.scss";
+
+import { Button, Flex, Image, Text, Video } from "@fluentui/react-northstar";
+import { WithTranslation, withTranslation } from "react-i18next";
+
 import Carousel from "./Carousel";
 import { FeedbackType } from "../../models/feedback-type";
+import IArticle from "../../models/article";
+import { ItemType } from "../../models/item-type";
+import { TFunction } from "i18next";
 
 interface ICarouselCardProps extends WithTranslation {
     carouselItem: IArticle[];
@@ -67,29 +70,36 @@ class CarouselCard extends React.Component<ICarouselCardProps, ICarouselState> {
 
     private onCardClick = (itemtype, learningId) => {
         if (itemtype === ItemType.Video) {
-            microsoftTeams.tasks.startTask({
+            microsoftTeams.dialog.url.open({
                 title: this.localize("viewArticle"),
-                height: 600,
-                width: 600,
+                size: {
+                    height: 600,
+                    width: 600
+                },
                 url: `${window.location.origin}/view-video-content?id=${learningId}&status=${true}`
-            }, (error: any, result: any) => {
+            }, (result: any) => {
                 if (result) {
-                    if (result.message === "isFeedbackOpen") {
-                        microsoftTeams.tasks.startTask({
+                    if (result.result.message === "isFeedbackOpen") {
+                        microsoftTeams.dialog.url.open({
                             title: this.localize("feedbackText"),
-                            height: 350,
-                            width: 700,
-                            url: `${window.location.origin}/user-feedback?id=${result.learningId}&status=${FeedbackType.LearningContentFeedback}`
-                        }, (error: any, result: any) => {
+                            size: {
+                                height: 350,
+                                width: 700
+                            },
+                            url: `${window.location.origin}/user-feedback?id=${result.result.learningId}&status=${FeedbackType.LearningContentFeedback}`
+                        }, (resultObj: any) => {
+
                         });
                     }
-                    else if (result.message === "isShareArticleOpen") {
-                        microsoftTeams.tasks.startTask({
+                    else if (result.result.message === "isShareArticleOpen") {
+                        microsoftTeams.dialog.url.open({
                             title: this.localize("shareContent"),
-                            height: 600,
-                            width: 750,
-                            url: `${window.location.origin}/view-content-share?id=${result.learningId}`
-                        }, (error: any, result: any) => {
+                            size: {
+                                height: 600,
+                                width: 750
+                            },
+                            url: `${window.location.origin}/view-content-share?id=${result.result.learningId}`
+                        }, (result: any) => {
                         });
                     }
                 }
@@ -99,24 +109,26 @@ class CarouselCard extends React.Component<ICarouselCardProps, ICarouselState> {
             var appId = this.props.botId;
             var baseUrl = `${window.location.origin}/view-image-content?id=${learningId}`
             let url = `https://teams.microsoft.com/l/stage/${appId}/0?context={"contentUrl":"${baseUrl}","websiteUrl":"${baseUrl}","name":"View article"}`;
-            microsoftTeams.executeDeepLink(encodeURI(url));
+            microsoftTeams.app.openLink(encodeURI(url));
         }
     }
 
     private onShareClick = (learningId: string) => {
-        microsoftTeams.tasks.startTask({
+        microsoftTeams.dialog.url.open({
             title: this.localize("shareContent"),
-            height: 600,
-            width: 600,
+            size: {
+                height: 600,
+                width: 600
+            },
             url: `${window.location.origin}/view-content-share?id=${learningId}`
-        }, (error: any, result: any) => {
+        }, (result: any) => {
 
         });
     }
 
     getExt(filename) {
         var ext = filename.split('.').pop();
-        if (ext == filename) return "";
+        if (ext === filename) return "";
         return ext;
     }
 
@@ -125,14 +137,14 @@ class CarouselCard extends React.Component<ICarouselCardProps, ICarouselState> {
         const carosuelItem = this.props.carouselItem.map((item: IArticle) => {
             let ismp4File = false;
             let ext = this.getExt(item.itemlink);
-            if (ext == "mp4" || ext == "MP4") {
+            if (ext === "mp4" || ext === "MP4") {
                 ismp4File = true;
             }
 
             return (
                 <Flex styles={{ marginLeft: "0.1rem" }} className="card-grid-tileCarousel">
                     <Flex column className="card-Grid-SubtitleCarousel">
-                        {item.itemType == ItemType.Video ?
+                        {item.itemType === ItemType.Video ?
                             ismp4File ?
                                 <Video className="card-image-details-Carousel"
                                     poster={item.tileImageLink}
@@ -141,6 +153,7 @@ class CarouselCard extends React.Component<ICarouselCardProps, ICarouselState> {
 
                                 />
                                 :
+                                // eslint-disable-next-line jsx-a11y/iframe-has-title
                                 <iframe width="160"
                                     className="card-image-details-Carousel"
                                     style={{ marginTop: "1rem" }}
@@ -163,7 +176,7 @@ class CarouselCard extends React.Component<ICarouselCardProps, ICarouselState> {
                             </Flex>
                         </Flex>
                         {
-                            item.itemType == ItemType.Video ? <Text className="trending-card-desc-Carousel" content={item.length + " min"} /> : <Text className="trending-card-desc-Carousel" content={item.length + " min read"} />
+                            item.itemType === ItemType.Video ? <Text className="trending-card-desc-Carousel" content={item.length + " min"} /> : <Text className="trending-card-desc-Carousel" content={item.length + " min read"} />
                         }
                     </Flex>
                 </Flex>

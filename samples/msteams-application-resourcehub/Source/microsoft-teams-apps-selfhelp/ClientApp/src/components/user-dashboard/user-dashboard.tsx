@@ -1,30 +1,33 @@
-﻿import * as React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
-import { Breadcrumb, Divider, Flex, Text, Segment, SearchIcon, MoreIcon, Input, Box, Image, Grid, ParticipantAddIcon, Checkbox, Menu, ChevronDownMediumIcon, Slider, Button, Loader } from "@fluentui/react-northstar";
+﻿import "./user-dashboard.scss";
+
+import * as React from "react";
 import * as microsoftTeams from "@microsoft/teams-js";
-import withContext, { IWithContext } from '../../providers/context-provider';
-import CarouselCard from "./carousel-card";
-import TrendingTopicCard from "./trending-topic-card";
-import ScenarioCard from "./scenario-card";
-import { ChevronEndMediumIcon } from '@fluentui/react-icons-northstar';
-import "./user-dashboard.scss";
-import SearchResultes from "../search-result/search-result";
-import IArticle from "../../models/article";
-import { getLearningContentByType } from "../../api/article-api";
-import { getCurrentUserLearningPath } from "../../api/learning-path-api";
-import { getApplicationSettingsMetadata } from '../../api/authentication-metadata';
-import { SelectionType } from "../../models/selection-type";
-import { initializeIcons } from "@uifabric/icons";
-import { Icon } from '@fluentui/react';
-import AdminDashboard from "../../components/admin-dashboard/admin-dashboard";
-import { getUserByIdDataAsync, getUserRoleAsync } from "../../api/user-api";
-import { ItemType } from "../../models/item-type";
-import ILearningPath from "../../models/learning-path";
-import CarouselCardMobile from "./carousel-card-mobile";
-import { FeedbackType } from "../../models/feedback-type";
-import ISubscribe from "../../models/subscribe";
+
+import { Box, Breadcrumb, Button, Checkbox, ChevronDownMediumIcon, Divider, Flex, Grid, Image, Input, Loader, Menu, MoreIcon, ParticipantAddIcon, SearchIcon, Segment, Slider, Text } from "@fluentui/react-northstar";
+import { WithTranslation, withTranslation } from "react-i18next";
 import { createOrUpdateSubscribeAsync, getSubscribeByUserIdAsync } from "../../api/subscribe-api";
+import { getUserByIdDataAsync, getUserRoleAsync } from "../../api/user-api";
+import withContext, { IWithContext } from '../../providers/context-provider';
+
+import AdminDashboard from "../../components/admin-dashboard/admin-dashboard";
+import CarouselCard from "./carousel-card";
+import CarouselCardMobile from "./carousel-card-mobile";
+import { ChevronEndMediumIcon } from '@fluentui/react-icons-northstar';
+import { FeedbackType } from "../../models/feedback-type";
+import IArticle from "../../models/article";
+import ILearningPath from "../../models/learning-path";
+import ISubscribe from "../../models/subscribe";
+import { Icon } from '@fluentui/react';
+import { ItemType } from "../../models/item-type";
+import ScenarioCard from "./scenario-card";
+import SearchResultes from "../search-result/search-result";
+import { SelectionType } from "../../models/selection-type";
+import { TFunction } from "i18next";
+import TrendingTopicCard from "./trending-topic-card";
+import { getApplicationSettingsMetadata } from '../../api/authentication-metadata';
+import { getCurrentUserLearningPath } from "../../api/learning-path-api";
+import { getLearningContentByType } from "../../api/article-api";
+import { initializeIcons } from "@uifabric/icons";
 
 interface IUserDashboardProps extends WithTranslation, IWithContext {
 }
@@ -55,8 +58,8 @@ interface IDashboardState {
     tenantId: string;
     userAadId: string;
     upn: string;
-    subscribeData:ISubscribe;
-    subscribeStatus:boolean;
+    subscribeData: ISubscribe;
+    subscribeStatus: boolean;
 };
 
 class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState> {
@@ -90,19 +93,19 @@ class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState
             botId: "",
             isCompleted: false,
             tenantId: "",
-            userAadId:"",
-            upn:"",
-            subscribeData:{userId:"",tenantId:"",createdBy:"",createdOn:new Date(),email:"",eTag:"",partitionKey:"",RowKey:"",status:false,timestamp:new Date()},
-            subscribeStatus:false
+            userAadId: "",
+            upn: "",
+            subscribeData: { userId: "", tenantId: "", createdBy: "", createdOn: new Date(), email: "", eTag: "", partitionKey: "", RowKey: "", status: false, timestamp: new Date() },
+            subscribeStatus: false
         }
     }
 
     componentDidMount() {
         this.getSubscribeData();
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            this.setState({ tenantId: context.tid!, userAadId: context.userObjectId!,upn:context.userPrincipalName!});
-            this.getUserRole(context.upn!);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            this.setState({ tenantId: context?.user!.tenant!.id!, userAadId: context?.user?.id!, upn: context?.user?.userPrincipalName! });
+            this.getUserRole(context?.user?.userPrincipalName!);
             this.initializeGettingStartedCardData();
             this.initializeScenarioCardData();
             this.initializeTrendingTopicsCardData();
@@ -131,12 +134,12 @@ class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState
             this.setState({ isAdminUser: response.data });
         }
     }
-    
+
     private getSubscribeData = async () => {
         var response = await getSubscribeByUserIdAsync();
         if (response.data) {
-            this.setState({subscribeStatus:response.data[0].status})
-            this.setState({subscribeData: response.data});
+            this.setState({ subscribeStatus: response.data[0].status })
+            this.setState({ subscribeData: response.data });
         }
     }
 
@@ -226,12 +229,14 @@ class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState
     }
 
     private onAddFeedbackClick = (status: FeedbackType) => {
-        this.props.microsoftTeams.tasks.startTask({
+        this.props.microsoftTeams.dialog.url.open({
             title: this.localize("feedbackText"),
-            height: 315,
-            width: 700,
+            size: {
+                height: 315,
+                width: 700
+            },
             url: `${window.location.origin}/user-feedback?status=${status}`
-        }, (error: any, result: any) => {
+        }, (result: any) => {
             if (result) {
 
             }
@@ -239,36 +244,33 @@ class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState
     }
 
     private onAddSubscribeClick = async () => {
-        let status:boolean;
-        if(this.state.subscribeStatus === true)
-        {
+        let status: boolean;
+        if (this.state.subscribeStatus === true) {
             status = false;
         }
-        else
-        {
+        else {
             status = true;
         }
-        let subscribeDetails : ISubscribe ={
-            RowKey:"",
-            partitionKey:"",
-            email:this.state.upn,
-            userId:this.state.userAadId,
-            tenantId:this.state.tenantId,
-            createdBy:"",
+        let subscribeDetails: ISubscribe = {
+            RowKey: "",
+            partitionKey: "",
+            email: this.state.upn,
+            userId: this.state.userAadId,
+            tenantId: this.state.tenantId,
+            createdBy: "",
             createdOn: new Date(),
             eTag: "",
             timestamp: new Date(),
-            status:status
+            status: status
         }
         var resultSubscribe = await createOrUpdateSubscribeAsync(subscribeDetails)
-        if(resultSubscribe.data)
-        {
+        if (resultSubscribe.data) {
             this.getSubscribeData();
         }
     }
 
     private onSearchClick = async () => {
-        if (this.state.searchText != "") {
+        if (this.state.searchText !== "") {
             this.setState({ isSearchView: true });
         }
     }
@@ -293,22 +295,26 @@ class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState
 
     private onCompletedButtonClick = async (learningId, itemType) => {
         if (itemType === ItemType.Video) {
-            microsoftTeams.tasks.startTask({
+            microsoftTeams.dialog.url.open({
                 title: this.localize("viewArticle"),
-                height: 600,
-                width: 600,
+                size: {
+                    height: 600,
+                    width: 600
+                },
                 url: `${window.location.origin}/view-video-content?id=${learningId}&status=${true}`
-            }, (error: any, result: any) => {
+            }, (result: any) => {
                 if (result) {
-                    if (result.message === "completedLearning") {
+                    if (result.result.message === "completedLearning") {
                         this.initializeLearningPathCardData("Done");
                     }
-                    else if (result.message === "isFeedbackOpen") {
-                        this.props.microsoftTeams.tasks.startTask({
+                    else if (result.result.message === "isFeedbackOpen") {
+                        this.props.microsoftTeams.dialog.url.open({
                             title: this.localize("feedbackText"),
-                            height: 315,
-                            width: 700,
-                            url: `${window.location.origin}/user-feedback?status=${result.status}`
+                            size: {
+                                height: 315,
+                                width: 700
+                            },
+                            url: `${window.location.origin}/user-feedback?status=${result.result.status}`
                         });
                     }
                 }
@@ -321,7 +327,7 @@ class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState
             var appId = this.state.botId;
             var baseUrl = `${window.location.origin}/view-image-content?id=${learningId}`
             let url = `https://teams.microsoft.com/l/stage/${appId}/0?context={"contentUrl":"${baseUrl}","websiteUrl":"${baseUrl}","name":"View article"}`;
-            microsoftTeams.executeDeepLink(encodeURI(url));
+            microsoftTeams.app.openLink(encodeURI(url));
         }
     }
 
@@ -526,14 +532,14 @@ class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState
                                 </Flex>
                                 {this.state.subscribeStatus === true ?
                                     <Flex vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={() => this.onAddSubscribeClick()} >
-                                    <Icon iconName="Unsubscribe" onClick={() => this.onAddSubscribeClick()}/>
+                                        <Icon iconName="Unsubscribe" onClick={() => this.onAddSubscribeClick()} />
                                         <Text content={this.localize("UnsubscribeText")} title={this.localize("SubscribeTextTooltip")} weight="semibold" aria-label={this.localize("UnsubscribeText")} className="feedbackText" />
-                                </Flex>:
-                                <Flex vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={() => this.onAddSubscribeClick()} >
-                                <Icon iconName="Subscribe" onClick={() => this.onAddSubscribeClick()}/>
+                                    </Flex> :
+                                    <Flex vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={() => this.onAddSubscribeClick()} >
+                                        <Icon iconName="Subscribe" onClick={() => this.onAddSubscribeClick()} />
                                         <Text content={this.localize("SubscribeText")} title={this.localize("SubscribeTextTooltip")} weight="semibold" aria-label={this.localize("SubscribeText")} className="feedbackText" />
-                            </Flex>
-                            }
+                                    </Flex>
+                                }
                                 <Flex hidden={!this.state.isAdminUser} vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={this.onViewAdminPageClick}>
                                     <ParticipantAddIcon outline size="small" />
                                     <Text content={this.localize("switchUserText")} weight="semibold" aria-label={this.localize("switchUserText")} className="switchUser" />
@@ -581,15 +587,15 @@ class UserDashboard extends React.Component<IUserDashboardProps, IDashboardState
                                     <Icon iconName="Feedback" onClick={() => this.onAddFeedbackClick(FeedbackType.GeneralFeedback)} />
                                 </Flex>
                                 {this.state.subscribeStatus === true ?
-                                <Flex vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={() => this.onAddSubscribeClick()} >
-                                    <Icon iconName="Unsubscribe" onClick={() => this.onAddSubscribeClick()}/>
+                                    <Flex vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={() => this.onAddSubscribeClick()} >
+                                        <Icon iconName="Unsubscribe" onClick={() => this.onAddSubscribeClick()} />
                                         <Text content={this.localize("UnsubscribeText")} weight="semibold" aria-label={this.localize("UnsubscribeText")} className="feedbackText" />
-                                </Flex>:
-                                <Flex vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={() => this.onAddSubscribeClick()} >
-                                <Icon iconName="Subscribe" onClick={() => this.onAddSubscribeClick()}/>
+                                    </Flex> :
+                                    <Flex vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={() => this.onAddSubscribeClick()} >
+                                        <Icon iconName="Subscribe" onClick={() => this.onAddSubscribeClick()} />
                                         <Text content={this.localize("SubscribeText")} weight="semibold" aria-label={this.localize("SubscribeText")} className="feedbackText" />
-                            </Flex>
-                            }
+                                    </Flex>
+                                }
                                 <Flex hidden={!this.state.isAdminUser} vAlign="center" gap="gap.smaller" className="items-container cursor-pointer" onClick={this.onViewAdminPageClick}>
                                     <ParticipantAddIcon outline size="small" onClick={this.onViewAdminPageClick} />
                                 </Flex>

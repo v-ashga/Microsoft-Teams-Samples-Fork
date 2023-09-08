@@ -1,12 +1,15 @@
+import "./user-dashboard.scss";
+
 import * as React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
-import { Carousel, Flex, Card, Image, Text, Video, MoreIcon, Menu, ShareGenericIcon, Button } from "@fluentui/react-northstar";
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Button, Card, Carousel, Flex, Image, Menu, MoreIcon, ShareGenericIcon, Text, Video } from "@fluentui/react-northstar";
+import { WithTranslation, withTranslation } from "react-i18next";
+
+import { FeedbackType } from "../../models/feedback-type";
 import IArticle from "../../models/article";
 import { ItemType } from "../../models/item-type";
-import "./user-dashboard.scss";
-import { FeedbackType } from "../../models/feedback-type";
+import { TFunction } from "i18next";
 
 interface ICarouselCardProps extends WithTranslation {
     carouselItem: IArticle[];
@@ -23,29 +26,35 @@ class CarouselCardMobile extends React.Component<ICarouselCardProps> {
 
     private onCardClick = (itemtype, learningId) => {
         if (itemtype === ItemType.Video) {
-            microsoftTeams.tasks.startTask({
+            microsoftTeams.dialog.url.open({
                 title: this.localize("viewArticle"),
-                height: 600,
-                width: 600,
+                size: {
+                    height: 600,
+                    width: 600
+                },
                 url: `${window.location.origin}/view-video-content?id=${learningId}&status=${true}`
-            }, (error: any, result: any) => {
+            }, (result: any) => {
                 if (result) {
-                    if (result.message === "isFeedbackOpen") {
-                        microsoftTeams.tasks.startTask({
+                    if (result.result.message === "isFeedbackOpen") {
+                        microsoftTeams.dialog.url.open({
                             title: this.localize("feedbackText"),
-                            height: 350,
-                            width: 700,
+                            size: {
+                                height: 350,
+                                width: 700
+                            },
                             url: `${window.location.origin}/user-feedback?id=${result.learningId}&status=${FeedbackType.LearningContentFeedback}`
-                        }, (error: any, result: any) => {
+                        }, (result: any) => {
                         });
                     }
-                    else if (result.message === "isShareArticleOpen") {
-                        microsoftTeams.tasks.startTask({
+                    else if (result.result.message === "isShareArticleOpen") {
+                        microsoftTeams.dialog.url.open({
                             title: this.localize("shareContent"),
-                            height: 600,
-                            width: 750,
+                            size: {
+                                height: 600,
+                                width: 750
+                            },
                             url: `${window.location.origin}/view-content-share?id=${result.learningId}`
-                        }, (error: any, result: any) => {
+                        }, (result: any) => {
                         });
                     }
                 }
@@ -55,24 +64,26 @@ class CarouselCardMobile extends React.Component<ICarouselCardProps> {
             var appId = this.props.botId;
             var baseUrl = `${window.location.origin}/view-image-content?id=${learningId}`
             let url = `https://teams.microsoft.com/l/stage/${appId}/0?context={"contentUrl":"${baseUrl}","websiteUrl":"${baseUrl}","name":"View article"}`;
-            microsoftTeams.executeDeepLink(encodeURI(url));
+            microsoftTeams.app.openLink(encodeURI(url));
         }
     }
 
     private onShareClick = (learningId: string) => {
-        microsoftTeams.tasks.startTask({
+        microsoftTeams.dialog.url.open({
             title: this.localize("shareContent"),
-            height: 600,
-            width: 750,
+            size: {
+                height: 600,
+                width: 750
+            },
             url: `${window.location.origin}/view-content-share?id=${learningId}`
-        }, (error: any, result: any) => {
+        }, (result: any) => {
 
         });
     }
 
     getExt(filename) {
         var ext = filename.split('.').pop();
-        if (ext == filename) return "";
+        if (ext === filename) return "";
         return ext;
     }
 
@@ -81,7 +92,7 @@ class CarouselCardMobile extends React.Component<ICarouselCardProps> {
         const carosuelItem = this.props.carouselItem.map((item: IArticle, index: number) => {
             let ismp4File = false;
             let ext = this.getExt(item.itemlink);
-            if (ext == "mp4" || ext == "MP4") {
+            if (ext === "mp4" || ext === "MP4") {
                 ismp4File = true;
             }
 
@@ -92,7 +103,7 @@ class CarouselCardMobile extends React.Component<ICarouselCardProps> {
                         <Card className="carousel-card-details" size="smaller">
                             <Card.Body fitted>
                                 <Flex column padding="padding.medium" >
-                                    {item.itemType == ItemType.Video ?
+                                    {item.itemType === ItemType.Video ?
                                         ismp4File ?
                                             <Video className="card-image-details-CarouselMobile"
                                                 poster={item.tileImageLink}
@@ -101,6 +112,7 @@ class CarouselCardMobile extends React.Component<ICarouselCardProps> {
 
                                             />
                                             :
+                                            // eslint-disable-next-line jsx-a11y/iframe-has-title
                                             <iframe width="230"
                                                 className="card-image-details-CarouselMobile"
                                                 style={{ marginLeft: "2.5rem", marginTop: "1rem" }}
@@ -153,8 +165,8 @@ class CarouselCardMobile extends React.Component<ICarouselCardProps> {
                                         </span>
                                     </Flex>
                                     {
-                                        item.itemType == ItemType.Video ? <Text className="article-length-margin-left" content={item.length + this.localize("min")} />
-                                            : <Text className="article-length-margin-left" content={item.length + this.localize("minRead") } />
+                                        item.itemType === ItemType.Video ? <Text className="article-length-margin-left" content={item.length + this.localize("min")} />
+                                            : <Text className="article-length-margin-left" content={item.length + this.localize("minRead")} />
                                     }
                                 </Flex>
                             </Card.Body>

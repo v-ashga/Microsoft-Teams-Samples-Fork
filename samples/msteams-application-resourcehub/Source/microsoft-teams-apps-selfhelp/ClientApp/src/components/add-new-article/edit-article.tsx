@@ -1,14 +1,17 @@
-﻿import * as React from 'react';
-import { FormDropdown, Input, Flex, FlexItem, Button } from '@fluentui/react-northstar'
-import { TFunction, WithTranslation, withTranslation } from 'react-i18next';
-import withContext, { IWithContext } from '../../providers/context-provider';
+﻿import './add-new-article.css'
+
+import * as React from 'react';
 import * as microsoftTeams from "@microsoft/teams-js";
-import './add-new-article.css'
+
+import { Button, Flex, FlexItem, FormDropdown, Input } from '@fluentui/react-northstar'
+import { TFunction, WithTranslation, withTranslation } from 'react-i18next';
+import { getLearningContentById, updateLearningContent } from '../../api/article-api';
+import withContext, { IWithContext } from '../../providers/context-provider';
+
 import IArticle from '../../models/article'
 import { ItemType } from '../../models/item-type';
 import { SelectionType } from '../../models/selection-type';
 import { SourceType } from '../../models/source-type';
-import { getLearningContentById, updateLearningContent } from '../../api/article-api';
 import { Text } from '@fluentui/react-northstar';
 
 const labelId = 'choose-friend-label'
@@ -250,7 +253,7 @@ const EditArticle: React.FunctionComponent<IEditArticleProps> = props => {
     };
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
+        microsoftTeams.app.initialize();
         getlearningContent();
     }, []);
 
@@ -364,7 +367,7 @@ const EditArticle: React.FunctionComponent<IEditArticleProps> = props => {
             const confirmMessage = {
                 confirm: true,
             }
-            microsoftTeams.tasks.submitTask(JSON.stringify(confirmMessage));
+            microsoftTeams.dialog.url.submit(JSON.stringify(confirmMessage));
             return true;
         }
     }
@@ -373,7 +376,7 @@ const EditArticle: React.FunctionComponent<IEditArticleProps> = props => {
         const confirmMessage = {
             confirm: false,
         }
-        microsoftTeams.tasks.submitTask(JSON.stringify(confirmMessage));
+        microsoftTeams.dialog.url.submit(JSON.stringify(confirmMessage));
         return true;
     }
 

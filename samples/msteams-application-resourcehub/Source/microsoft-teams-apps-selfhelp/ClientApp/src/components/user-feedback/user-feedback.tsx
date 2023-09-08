@@ -1,18 +1,21 @@
-﻿import React from "react";
-import { useEffect } from "react";
+﻿import "./user-feedback.scss";
+
 import * as microsoftTeams from "@microsoft/teams-js";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
-import withContext, { IWithContext } from '../../providers/context-provider';
-import { Flex } from '@fluentui/react-northstar';
-import { Text, TextArea, Button, Form, FormRadioGroup, Label, Image } from '@fluentui/react-northstar';
-import "./user-feedback.scss";
-import IFeedback from "../../models/feedback";
-import { FeedbackType } from "../../models/feedback-type";
-import { FeedbackHelpfulState } from "../../models/feedback-helpful-status";
-import { addNewFeedback } from "../../api/feedback-api";
-import Constants from "../../constants/constants";
+
+import { Button, Form, FormRadioGroup, Image, Label, Text, TextArea } from '@fluentui/react-northstar';
 import { Icon, initializeIcons } from "@fluentui/react";
+import { WithTranslation, withTranslation } from "react-i18next";
+import withContext, { IWithContext } from '../../providers/context-provider';
+
+import Constants from "../../constants/constants";
+import { FeedbackHelpfulState } from "../../models/feedback-helpful-status";
+import { FeedbackType } from "../../models/feedback-type";
+import { Flex } from '@fluentui/react-northstar';
+import IFeedback from "../../models/feedback";
+import React from "react";
+import { TFunction } from "i18next";
+import { addNewFeedback } from "../../api/feedback-api";
+import { useEffect } from "react";
 
 interface IUserFeedbackProps extends WithTranslation, IWithContext {
 }
@@ -63,7 +66,7 @@ const UserFeedback = (props): React.ReactElement => {
     /* Callback when  isHelpfull is change */
     const onIsHelpfulChange = (event) => {
 
-        if (event == 'Yes') {
+        if (event === 'Yes') {
 
             setIsHelpful(true);
         } else {
@@ -83,7 +86,7 @@ const UserFeedback = (props): React.ReactElement => {
     }
 
     useEffect(() => {
-        microsoftTeams.initialize();
+        microsoftTeams.app.initialize();
         window.addEventListener("resize", onScreenResize);
         return () => {
             window.removeEventListener("resize", onScreenResize);
@@ -100,13 +103,13 @@ const UserFeedback = (props): React.ReactElement => {
         var feedbackType = FeedbackType.GeneralFeedback;
         var state = FeedbackHelpfulState.Super;
 
-        if (isSuper == true) {
+        if (isSuper === true) {
             state = FeedbackHelpfulState.Super;
         }
-        else if (isMedium == true) {
+        else if (isMedium === true) {
             state = FeedbackHelpfulState.Medium;
         }
-        else if (isNotHelpful == true) {
+        else if (isNotHelpful === true) {
             state = FeedbackHelpfulState.NotHelpful;
         }
 
@@ -125,14 +128,14 @@ const UserFeedback = (props): React.ReactElement => {
 
         var sendFeedback: IFeedback = {
             feedbackId: "",
-            feedbackType: props.isStageView ? FeedbackType.LearningContentFeedback: feedbackType,
+            feedbackType: props.isStageView ? FeedbackType.LearningContentFeedback : feedbackType,
             learningContentId: learningId === null ? "" : learningId,
             helpfulStatus: state,
             isHelpful: isHelpful,
             rating: rating,
             feedback: feedbackText,
             createdOn: new Date(),
-            createdBy: props.teamsContext?.userObjectId!,
+            createdBy: props.teamsContext?.user?.id!,
             eTag: "",
             partitionKey: "",
             rowKey: "",
@@ -149,7 +152,7 @@ const UserFeedback = (props): React.ReactElement => {
     const onStarClick = (rating) => {
         setRating(rating);
 
-        if (rating == 1) {
+        if (rating === 1) {
             setRateOne(true);
             setRateTwo(false);
             setRateThree(false);
@@ -157,28 +160,28 @@ const UserFeedback = (props): React.ReactElement => {
             setRateFive(false);
 
         }
-        else if (rating == 2) {
+        else if (rating === 2) {
             setRateOne(true);
             setRateTwo(true);
             setRateThree(false);
             setRateFour(false);
             setRateFive(false);
         }
-        else if (rating == 3) {
+        else if (rating === 3) {
             setRateOne(true);
             setRateTwo(true);
             setRateThree(true);
             setRateFour(false);
             setRateFive(false);
         }
-        else if (rating == 4) {
+        else if (rating === 4) {
             setRateOne(true);
             setRateTwo(true);
             setRateThree(true);
             setRateFour(true);
             setRateFive(false);
         }
-        else if (rating == 5) {
+        else if (rating === 5) {
             setRateOne(true);
             setRateTwo(true);
             setRateThree(true);
@@ -189,7 +192,7 @@ const UserFeedback = (props): React.ReactElement => {
 
     /* callback for cancle button */
     const onCancelFeedbackClick = async () => {
-        microsoftTeams.tasks.submitTask();
+        microsoftTeams.dialog.url.submit();
         return true;
     }
 
@@ -200,50 +203,50 @@ const UserFeedback = (props): React.ReactElement => {
                     <Flex className="feedback-headingMobile" >
                         <Text content={localize("feedbackGreeting")} />
                     </Flex>
-                    <Flex className="containerMobile" styles={{ marginLeft: "0.5rem"}} >
+                    <Flex className="containerMobile" styles={{ marginLeft: "0.5rem" }} >
                         <div>
                             <Flex className={isSuper === true ? "feedback-leftColor" : "feedback-left"}>
-                                <Button icon={<Icon iconName="Emoji2" className="icon-Color"/>} text content={<Text content={localize("superHelpful")} className={isSuper === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("Super")} />
+                                <Button icon={<Icon iconName="Emoji2" className="icon-Color" />} text content={<Text content={localize("superHelpful")} className={isSuper === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("Super")} />
                             </Flex>
                             <Flex className={isMedium === true ? "feedback-leftColor" : "feedback-left"} styles={{ marginTop: "1rem" }}>
-                                <Button icon={<Icon iconName="EmojiNeutral" className="icon-Color"/>} text content={<Text content={localize("mediumHelpful")} className={isMedium === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("Medium")} />
+                                <Button icon={<Icon iconName="EmojiNeutral" className="icon-Color" />} text content={<Text content={localize("mediumHelpful")} className={isMedium === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("Medium")} />
                             </Flex>
                             <Flex className={isNotHelpful === true ? "feedback-leftColor" : "feedback-left"} styles={{ marginTop: "1rem" }}>
-                                <Button icon={<Icon iconName="EmojiDisappointed" className="icon-Color"/>} text content={<Text content={localize("notHelpful")} className={isNotHelpful === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("NotHelpful")} />
+                                <Button icon={<Icon iconName="EmojiDisappointed" className="icon-Color" />} text content={<Text content={localize("notHelpful")} className={isNotHelpful === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("NotHelpful")} />
                             </Flex>
                         </div>
                     </Flex>
                     <Flex column gap="gap.small" className="feedback-rightMobile" >
                         <Flex gap='gap.medium'>
                             <FormRadioGroup onCheckedValueChange={(e, data) => onIsHelpfulChange(data?.value)} defaultCheckedValue="Yes" label={<Text className="feedback-radio-text" content={localize("doYouFindHelpUseful")} />}
-                                    items={[
-                                        {
-                                            key: '1',
-                                            label: 'Yes',
-                                            value: 'Yes',
-                                        },
-                                        {
-                                            key: '2',
-                                            label: 'No',
-                                            value: 'No',
-                                        },
-                                    ]}
-                                />
-                            </Flex>
-                            <Flex>
-                                <Text content={localize("whatCanImproved")} className="whatCanimprove" />
-                            </Flex>
-                            <TextArea fluid placeholder={localize("typeSomething")} onChange={onFeedbackTextAdded} className="textArea" />
-                            <Flex>
-                                <Text content={localize("overallRating")} className="overallRating" />
-                                {rateOne == true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold"/>} style={{ paddingLeft: "0.8rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(1)}  text className="star-ButtonIcon" ></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon"/>} style={{ paddingLeft: "0.8rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(1)} className="star-ButtonIcon"></Button>}
-                                {rateTwo == true ?<Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(2)}  text className="star-ButtonIcon"></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar"className="star-icon"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(2)} className="star-ButtonIcon"></Button>}
-                                {rateThree == true ?<Button iconOnly icon={<Icon iconName="FavoriteStarFill"  className="start-icon-Gold" />} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(3)}  text className="star-ButtonIcon"></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(3)} className="star-ButtonIcon"></Button>}
-                                {rateFour == true ?<Button iconOnly icon={<Icon iconName="FavoriteStarFill"  className="start-icon-Gold" />} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(4)}  text className="star-ButtonIcon"></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(4)} className="star-ButtonIcon"></Button>}
-                                {rateFive == true ?<Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(5)}  text className="star-ButtonIcon"></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(5)} className="star-ButtonIcon"></Button>}
-                            </Flex>
+                                items={[
+                                    {
+                                        key: '1',
+                                        label: 'Yes',
+                                        value: 'Yes',
+                                    },
+                                    {
+                                        key: '2',
+                                        label: 'No',
+                                        value: 'No',
+                                    },
+                                ]}
+                            />
                         </Flex>
-                    <Flex gap="gap.medium" styles={{ marginTop: "2rem"}}>
+                        <Flex>
+                            <Text content={localize("whatCanImproved")} className="whatCanimprove" />
+                        </Flex>
+                        <TextArea fluid placeholder={localize("typeSomething")} onChange={onFeedbackTextAdded} className="textArea" />
+                        <Flex>
+                            <Text content={localize("overallRating")} className="overallRating" />
+                            {rateOne === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ paddingLeft: "0.8rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(1)} text className="star-ButtonIcon" ></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ paddingLeft: "0.8rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(1)} className="star-ButtonIcon"></Button>}
+                            {rateTwo === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(2)} text className="star-ButtonIcon"></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(2)} className="star-ButtonIcon"></Button>}
+                            {rateThree === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(3)} text className="star-ButtonIcon"></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(3)} className="star-ButtonIcon"></Button>}
+                            {rateFour === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(4)} text className="star-ButtonIcon"></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(4)} className="star-ButtonIcon"></Button>}
+                            {rateFive === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(5)} text className="star-ButtonIcon"></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(5)} className="star-ButtonIcon"></Button>}
+                        </Flex>
+                    </Flex>
+                    <Flex gap="gap.medium" styles={{ marginTop: "2rem" }}>
                         <Flex.Item push>
                             <Button content={localize("cancelButton")} secondary onClick={props.isStageView ? props.onAddFeedbackClick : onCancelFeedbackClick} />
                         </Flex.Item>
@@ -255,7 +258,7 @@ const UserFeedback = (props): React.ReactElement => {
         else if (isTaskSubmitedSuccessfully === true && !props.isStageView) {
             return (
                 <>
-                    <Flex column styles={{ marginLeft: "2rem", marginRight: "2rem",marginTop:"10rem" }} >
+                    <Flex column styles={{ marginLeft: "2rem", marginRight: "2rem", marginTop: "10rem" }} >
                         <Flex column gap="gap.medium" hAlign="center" vAlign="center" styles={{ marginLeft: "2rem", marginRight: "2rem" }}>
                             <Image src="/images/thank-you.png" className="thank-you-image" />
                             <Text weight="bold" content={localize("thankYouForFeedback")} />
@@ -275,7 +278,7 @@ const UserFeedback = (props): React.ReactElement => {
         else if (isTaskSubmitedSuccessfully === true && props.isStageView) {
             return (
                 <>
-                    <Flex column styles={{ marginLeft: "2rem", marginRight: "2rem"}} >
+                    <Flex column styles={{ marginLeft: "2rem", marginRight: "2rem" }} >
                         <Flex column gap="gap.medium" hAlign="center" vAlign="center" styles={{ marginLeft: "2rem", marginRight: "2rem" }}>
                             <Image src="/images/thank-you.png" className="thank-you-image" />
                             <Text weight="bold" content={localize("thankYouForFeedback")} />
@@ -304,13 +307,13 @@ const UserFeedback = (props): React.ReactElement => {
                     <Flex gap="gap.small" className="container" >
                         <div>
                             <Flex className={isSuper === true ? "feedback-leftColor" : "feedback-left"}>
-                                <Button icon={<Icon iconName="Emoji2" className="icon-Color"/>} text content={<Text content={localize("superHelpful")} className={isSuper === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("Super")} />
+                                <Button icon={<Icon iconName="Emoji2" className="icon-Color" />} text content={<Text content={localize("superHelpful")} className={isSuper === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("Super")} />
                             </Flex>
                             <Flex className={isMedium === true ? "feedback-leftColor" : "feedback-left"} styles={{ marginTop: "1rem" }}>
-                                <Button icon={<Icon iconName="EmojiNeutral" className="icon-Color"/>} text content={<Text content={localize("mediumHelpful")} className={isMedium === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("Medium")} />
+                                <Button icon={<Icon iconName="EmojiNeutral" className="icon-Color" />} text content={<Text content={localize("mediumHelpful")} className={isMedium === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("Medium")} />
                             </Flex>
                             <Flex className={isNotHelpful === true ? "feedback-leftColor" : "feedback-left"} styles={{ marginTop: "1rem" }}>
-                                <Button icon={<Icon iconName="EmojiDisappointed" className="icon-Color"/>} text content={<Text content={localize("notHelpful")} className={isNotHelpful === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("NotHelpful")} />
+                                <Button icon={<Icon iconName="EmojiDisappointed" className="icon-Color" />} text content={<Text content={localize("notHelpful")} className={isNotHelpful === true ? "feedback-button-textColor" : "feedback-button-text"} />} onClick={() => onHelpfulSelect("NotHelpful")} />
                             </Flex>
                         </div>
                         <Flex column gap="gap.small" className="feedback-right" >
@@ -336,11 +339,11 @@ const UserFeedback = (props): React.ReactElement => {
                             <TextArea fluid placeholder={localize("typeSomething")} onChange={onFeedbackTextAdded} className="textArea" />
                             <Flex>
                                 <Text content={localize("overallRating")} className="overallRating" />
-                                {rateOne == true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold"/>} style={{ paddingLeft: "0.8rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(1)}  text className="star-ButtonIcon" ></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon"/>} style={{ paddingLeft: "0.8rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(1)} className="star-ButtonIcon"></Button>}
-                                {rateTwo == true ?<Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(2)}  text className="star-ButtonIcon"></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar"className="star-icon"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(2)} className="star-ButtonIcon"></Button>}
-                                {rateThree == true ?<Button iconOnly icon={<Icon iconName="FavoriteStarFill"  className="start-icon-Gold" />} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(3)}  text className="star-ButtonIcon"></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(3)} className="star-ButtonIcon"></Button>}
-                                {rateFour == true ?<Button iconOnly icon={<Icon iconName="FavoriteStarFill"  className="start-icon-Gold" />} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(4)}  text className="star-ButtonIcon"></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(4)} className="star-ButtonIcon"></Button>}
-                                {rateFive == true ?<Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} onClick={() => onStarClick(5)}  text className="star-ButtonIcon"></Button>:<Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon"/>} style={{ marginLeft: "0rem !important",minWidth:"0px !important" }} text onClick={() => onStarClick(5)} className="star-ButtonIcon"></Button>}
+                                {rateOne === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ paddingLeft: "0.8rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(1)} text className="star-ButtonIcon" ></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ paddingLeft: "0.8rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(1)} className="star-ButtonIcon"></Button>}
+                                {rateTwo === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(2)} text className="star-ButtonIcon"></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(2)} className="star-ButtonIcon"></Button>}
+                                {rateThree === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(3)} text className="star-ButtonIcon"></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(3)} className="star-ButtonIcon"></Button>}
+                                {rateFour === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(4)} text className="star-ButtonIcon"></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(4)} className="star-ButtonIcon"></Button>}
+                                {rateFive === true ? <Button iconOnly icon={<Icon iconName="FavoriteStarFill" className="start-icon-Gold" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} onClick={() => onStarClick(5)} text className="star-ButtonIcon"></Button> : <Button iconOnly icon={<Icon iconName="FavoriteStar" className="star-icon" />} style={{ marginLeft: "0rem !important", minWidth: "0px !important" }} text onClick={() => onStarClick(5)} className="star-ButtonIcon"></Button>}
                             </Flex>
                         </Flex>
                     </Flex>
@@ -362,7 +365,7 @@ const UserFeedback = (props): React.ReactElement => {
                         <Flex hAlign="center" gap="gap.large" className="feedback-success-message"><Text content={localize("weWork")} styles={{ margin: "1rem" }} /></Flex>
                         <Flex hAlign="end" vAlign="end" gap="gap.large" className="feedback-success-button"><Button content={localize("closeButton")}
                             secondary onClick={props.isStageView ? props.onAddFeedbackClick : onCancelFeedbackClick} /></Flex>
-                    </Flex>                 
+                    </Flex>
                 </>
             );
         }

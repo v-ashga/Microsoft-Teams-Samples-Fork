@@ -1,14 +1,18 @@
-﻿import * as React from 'react';
-import { Flex, Divider, Loader, Video, Image, List, Text, Input, SearchIcon, Header, ShareGenericIcon } from '@fluentui/react-northstar'
-import './search-result.css'
-import { TFunction, withTranslation, WithTranslation } from 'react-i18next';
+﻿import './search-result.css'
+
+import * as React from 'react';
+
+import { Divider, Flex, Header, Image, Input, List, Loader, SearchIcon, ShareGenericIcon, Text, Video } from '@fluentui/react-northstar'
+import { TFunction, WithTranslation, withTranslation } from 'react-i18next';
 import withContext, { IWithContext } from '../../providers/context-provider';
-import IArticle from '../../models/article'
-import { geBingSearchResultsAsync } from '../../api/bing-search-api';
-import { ItemType } from '../../models/item-type';
+
 import { Breadcrumb } from '@fluentui/react-northstar';
 import { ChevronStartIcon } from '@fluentui/react-icons-northstar';
+import IArticle from '../../models/article'
+import { ItemType } from '../../models/item-type';
+import { geBingSearchResultsAsync } from '../../api/bing-search-api';
 import { logCustomEvent } from '../../api/log-event-api';
+
 interface ISearchResultesProps extends WithTranslation, IWithContext {
     searchText: string;
     botId: string;
@@ -107,12 +111,14 @@ const SearchResultes = (props): React.ReactElement => {
     }, []);
 
     const onShareClick = (learningId: string) => {
-        props.microsoftTeams.tasks.startTask({
+        props.microsoftTeams.dialog.url.open({
             title: localize("shareContent"),
-            height: 600,
-            width: 600,
+            size: {
+                height: 600,
+                width: 600
+            },
             url: `${window.location.origin}/view-content-share?id=${learningId}`
-        }, (error: any, result: any) => {
+        }, (result: any) => {
 
         });
     }
@@ -127,18 +133,22 @@ const SearchResultes = (props): React.ReactElement => {
 
     const onCardClick = (itemtype, learningId) => {
         if (itemtype === ItemType.Video) {
-            props.microsoftTeams.tasks.startTask({
+            props.microsoftTeams.dialog.url.open({
                 title: localize("viewArticle"),
-                height: 600,
-                width: 600,
+                size: {
+                    height: 600,
+                    width: 600
+                },
                 url: `${window.location.origin}/view-video-content?id=${learningId}&status=${true}`
-            }, (error: any, result: any) => {
-                if (result.message === "isFeedbackOpen") {
-                    props.microsoftTeams.tasks.startTask({
+            }, (result: any) => {
+                if (result.result.message === "isFeedbackOpen") {
+                    props.microsoftTeams.dialog.url.open({
                         title: localize("feedbackText"),
-                        height: 320,
-                        width: 700,
-                        url: `${window.location.origin}/user-feedback?status=${result.status}`
+                        size: {
+                            height: 320,
+                            width: 700
+                        },
+                        url: `${window.location.origin}/user-feedback?status=${result.result.status}`
                     });
                 }
             });
@@ -147,13 +157,13 @@ const SearchResultes = (props): React.ReactElement => {
             var appId = props.botId;
             var baseUrl = `${window.location.origin}/view-image-content?id=${learningId}`
             let url = `https://teams.microsoft.com/l/stage/${appId}/0?context={"contentUrl":"${baseUrl}","websiteUrl":"${baseUrl}","name":"View article"}`;
-            props.microsoftTeams.executeDeepLink(encodeURI(url));
+            props.microsoftTeams.app.openLink(encodeURI(url));
         }
     }
 
     const getExt = (filename: any) => {
         var ext = filename.split('.').pop();
-        if (ext == filename) return "";
+        if (ext === filename) return "";
         return ext;
     }
 
@@ -180,7 +190,7 @@ const SearchResultes = (props): React.ReactElement => {
                                     <Flex column vAlign="stretch" >
                                         <Flex className="header-text">
                                             <Header className="title-text" as="h3" content={
-                                                <a target="_blank" href={item.url}><Text content={item.name} title={item.name} className="text-ellipsis" /></a>} />
+                                                <a target="_blank" href={item.url} rel="noreferrer"><Text content={item.name} title={item.name} className="text-ellipsis" /></a>} />
 
                                         </Flex>
                                         <Flex className="search-item-description-format" onClick={() => onExternalArticleDescriptionClick(item.url)} >
@@ -214,7 +224,7 @@ const SearchResultes = (props): React.ReactElement => {
                                     <Flex column gap="gap.smaller" vAlign="stretch" >
                                         <Flex className="header-text">
                                             <Header className="title-text" as="h3" content={
-                                                <a target="_blank" href={item.webSearchUrl}><Text content={item.name} title={item.name} className="text-ellipsis" /></a>} />
+                                                <a target="_blank" href={item.webSearchUrl} rel="noreferrer"><Text content={item.name} title={item.name} className="text-ellipsis" /></a>} />
                                         </Flex>
                                         <Flex className="search-item-description-format" onClick={() => onExternalVideoDescriptionClick(item.webSearchUrl)}>
                                             <Text content={item.description} title={item.description} className="text-ellipsis" />
@@ -242,12 +252,13 @@ const SearchResultes = (props): React.ReactElement => {
                             <Flex gap="gap.small">
                                 <Flex.Item size="size.medium" push>
                                     <div>
-                                        {item.itemType == ItemType.Video ?
+                                        {item.itemType === ItemType.Video ?
                                             ismp4File ?
                                                 <Video className="image-size"
                                                     poster={item.tileImageLink}
 
                                                     src={item.itemlink}
+                                                // eslint-disable-next-line jsx-a11y/iframe-has-title
                                                 /> : <iframe
                                                     className="image-size"
                                                     src={item.itemlink}
@@ -295,7 +306,7 @@ const SearchResultes = (props): React.ReactElement => {
         }
 
         return (
-            rows.length == 0 ? <Flex hAlign="center"><Text content={"No Record Found"} /> </Flex> : <List items={rows} />
+            rows.length === 0 ? <Flex hAlign="center"><Text content={"No Record Found"} /> </Flex> : <List items={rows} />
         );
     }
 
@@ -386,7 +397,7 @@ const SearchResultes = (props): React.ReactElement => {
                                     <Flex column vAlign="stretch" >
                                         <Flex className="header-text-mobile">
                                             <Header className="title-text" as="h3" content={
-                                                <a target="_blank" href={item.url}><Text content={item.name} title={item.name} className="text-ellipsis" /></a>} />
+                                                <a target="_blank" href={item.url} rel="noreferrer"><Text content={item.name} title={item.name} className="text-ellipsis" /></a>} />
 
                                         </Flex>
                                         <Flex className="search-item-description-format-mobile" onClick={() => onExternalArticleDescriptionClick(item.url)} >
@@ -420,7 +431,7 @@ const SearchResultes = (props): React.ReactElement => {
                                     <Flex column gap="gap.smaller" vAlign="stretch" >
                                         <Flex className="header-text-mobile">
                                             <Header className="title-text" as="h3" content={
-                                                <a target="_blank" href={item.webSearchUrl}><Text content={item.name} title={item.name} className="text-ellipsis" /></a>} />
+                                                <a target="_blank" href={item.webSearchUrl} rel="noreferrer"><Text content={item.name} title={item.name} className="text-ellipsis" /></a>} />
                                         </Flex>
                                         <Flex className="search-item-description-format-mobile" onClick={() => onExternalVideoDescriptionClick(item.webSearchUrl)}>
                                             <Text content={item.description} title={item.description} className="text-ellipsis" />
@@ -448,12 +459,13 @@ const SearchResultes = (props): React.ReactElement => {
                             <Flex gap="gap.small">
                                 <Flex.Item size="size.medium" push>
                                     <div>
-                                        {item.itemType == ItemType.Video ?
+                                        {item.itemType === ItemType.Video ?
                                             ismp4File ?
                                                 <Video className="image-size-mobile"
                                                     poster={item.tileImageLink}
 
                                                     src={item.itemlink}
+                                                // eslint-disable-next-line jsx-a11y/iframe-has-title
                                                 /> : <iframe
                                                     className="image-size-mobile"
                                                     src={item.itemlink}
@@ -502,7 +514,7 @@ const SearchResultes = (props): React.ReactElement => {
         }
 
         return (
-            rows.length == 0 ? <Flex hAlign="center"><Text content={"No Record Found"} /> </Flex> : <Flex className="search-item-view-mobile">
+            rows.length === 0 ? <Flex hAlign="center"><Text content={"No Record Found"} /> </Flex> : <Flex className="search-item-view-mobile">
                 <List items={rows} /></Flex>
         );
     }

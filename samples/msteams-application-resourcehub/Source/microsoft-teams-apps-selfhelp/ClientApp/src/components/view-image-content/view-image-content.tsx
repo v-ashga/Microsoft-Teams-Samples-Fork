@@ -1,32 +1,35 @@
-﻿import React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
-import withContext, { IWithContext } from '../../providers/context-provider';
-import "./view-image-content.scss";
+﻿import "./view-image-content.scss";
+
 import * as microsoftTeams from "@microsoft/teams-js";
-import { useEffect } from "react";
+
 import {
-    Flex,
-    Text,
-    Divider,
-    Image,
     Button,
-    ShareGenericIcon
+    Divider,
+    Flex,
+    Image,
+    ShareGenericIcon,
+    Text
 } from '@fluentui/react-northstar';
-import { getLearningContentById, geArticleHtmlAsync } from "../../api/article-api";
-import IUserReaction from "../../models/user-reaction";
-import { createOrUpdateUserReaction, getUserReactionByLearningId } from "../../api/user-reaction-api";
-import { ReactionState } from "../../models/reaction-state";
-import ILearningPath from "../../models/learning-path";
-import { createOrUpdateLearningPathContent } from "../../api/learning-path-api";
-import { StatusCodes } from "http-status-codes";
-import { CompleteState } from "../../models/complete-state";
 import { Icon, initializeIcons } from "@fluentui/react";
-import UserFeedback from "../user-feedback/user-feedback";
-import { SelectionType } from "../../models/selection-type";
+import { WithTranslation, withTranslation } from "react-i18next";
+import { createOrUpdateUserReaction, getUserReactionByLearningId } from "../../api/user-reaction-api";
+import { geArticleHtmlAsync, getLearningContentById } from "../../api/article-api";
+import withContext, { IWithContext } from '../../providers/context-provider';
+
+import { CompleteState } from "../../models/complete-state";
 import IArticle from "../../models/article";
-import { logCustomEvent } from "../../api/log-event-api";
+import ILearningPath from "../../models/learning-path";
+import IUserReaction from "../../models/user-reaction";
+import React from "react";
+import { ReactionState } from "../../models/reaction-state";
+import { SelectionType } from "../../models/selection-type";
+import { StatusCodes } from "http-status-codes";
+import { TFunction } from "i18next";
+import UserFeedback from "../user-feedback/user-feedback";
 import ViewContentShare from "../view-content-share/view-content-share";
+import { createOrUpdateLearningPathContent } from "../../api/learning-path-api";
+import { logCustomEvent } from "../../api/log-event-api";
+import { useEffect } from "react";
 
 interface IViewImageContentProps extends WithTranslation, IWithContext {
 }
@@ -72,11 +75,11 @@ const ViewImageContent: React.FunctionComponent<IViewImageContentProps> = props 
     React.useEffect(() => {
         let params = new URLSearchParams(window.location.search);
         var learningId = params.get("id")!;
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            setUserAadId(context.userObjectId);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            setUserAadId(context!.user!.id);
             intializeDataAsync(learningId);
-            intializeUserReactionAsync(learningId, context.userObjectId!);
+            intializeUserReactionAsync(learningId, context!.user!.id!);
             logCustomEvent({
                 eTag: "",
                 timestamp: new Date(),
@@ -86,9 +89,9 @@ const ViewImageContent: React.FunctionComponent<IViewImageContentProps> = props 
                 learningContentId: learningId,
                 eventType: "Article",
                 createdOn: new Date(),
-                userAadId: context.userObjectId!,
+                userAadId: context!.user!.id!,
                 searchkey: "",
-                tenantId: context.tid!,
+                tenantId: context!.user!.tenant!.id!,
                 sharedToUserIds: "",
                 sharedToChannelIds: "",
             });
@@ -97,12 +100,12 @@ const ViewImageContent: React.FunctionComponent<IViewImageContentProps> = props 
 
     const intializeUserReactionAsync = async (learningId: string, aadId: string) => {
         let reaction = await getUserReactionByLearningId(learningId, aadId);
-        if (reaction.data == "") {
+        if (reaction.data === "") {
             setLikeOne(window.location.origin + "/icons/Like1.png");
             setDisLikeOne(window.location.origin + "/icons/DisLike1.png");
         }
         else {
-            if (reaction.data.reactionState == ReactionState.Like) {
+            if (reaction.data.reactionState === ReactionState.Like) {
                 setIsLike(true);
                 setLikeOne(window.location.origin + "/icons/Like2.png");
                 setIsDisLike(false)
@@ -163,11 +166,11 @@ const ViewImageContent: React.FunctionComponent<IViewImageContentProps> = props 
             reactionId: "",
             learningContentId: learningId,
             reactionState: state,
-            lastModifiedOn: new Date,
+            lastModifiedOn: new Date(),
             userAadId: userAadId!,
             partitionKey: "",
             rowKey: "",
-            timestamp: new Date,
+            timestamp: new Date(),
             eTag: ""
         }
         var response = await createOrUpdateUserReaction(sendReaction);
@@ -184,11 +187,11 @@ const ViewImageContent: React.FunctionComponent<IViewImageContentProps> = props 
             reactionId: "",
             learningContentId: learningId,
             reactionState: state,
-            lastModifiedOn: new Date,
+            lastModifiedOn: new Date(),
             userAadId: userAadId!,
             partitionKey: "",
             rowKey: "",
-            timestamp: new Date,
+            timestamp: new Date(),
             eTag: ""
         }
         var response = await createOrUpdateUserReaction(sendReaction);
@@ -209,11 +212,11 @@ const ViewImageContent: React.FunctionComponent<IViewImageContentProps> = props 
         }
         let response = await createOrUpdateLearningPathContent(learningData);
         if (response.status === StatusCodes.OK && response.data) {
-            microsoftTeams.tasks.submitTask();
+            microsoftTeams.dialog.url.submit();
             return true;
         }
         else {
-            microsoftTeams.tasks.submitTask();
+            microsoftTeams.dialog.url.submit();
             return true;
         }
     }
@@ -304,13 +307,13 @@ const ViewImageContent: React.FunctionComponent<IViewImageContentProps> = props 
                         </Flex.Item>
                         {
                             knowmoreLink !== "" && <Flex.Item>
-                                <a target="_blank" href={knowmoreLink}><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
+                                <a target="_blank" href={knowmoreLink} rel="noreferrer"><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
                             </Flex.Item>
                         }
                     </>
                         : knowmoreLink !== "" &&
                         <Flex.Item push>
-                            <a target="_blank" href={knowmoreLink}><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
+                            <a target="_blank" href={knowmoreLink} rel="noreferrer"><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
                         </Flex.Item>
                 }
             </Flex>

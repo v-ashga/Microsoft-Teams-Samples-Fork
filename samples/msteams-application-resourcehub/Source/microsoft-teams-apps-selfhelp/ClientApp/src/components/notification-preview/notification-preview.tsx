@@ -1,12 +1,15 @@
-﻿import React, { useEffect } from 'react'
+﻿import './notification-preview.css';
+
+import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Box, Button, Flex, FlexItem, Image, Input, List, Text } from '@fluentui/react-northstar'
+import React, { useEffect } from 'react'
 import { TFunction, WithTranslation, withTranslation } from 'react-i18next';
 import withContext, { IWithContext } from '../../providers/context-provider';
-import * as microsoftTeams from "@microsoft/teams-js";
-import './notification-preview.css';
-import { Input, Flex, FlexItem, Button, Text, Image, Box, List } from '@fluentui/react-northstar'
+
 import IArticleCheckBox from '../../models/articleCheckBox';
-import { getAllLearningContent } from '../../api/article-api';
 import { ItemType } from '../../models/item-type';
+import { getAllLearningContent } from '../../api/article-api';
 import { sendNotificationAsync } from '../../api/user-api';
 
 interface INotificationPreviewProps extends WithTranslation, IWithContext {
@@ -46,12 +49,12 @@ const NotificationPreview: React.FunctionComponent<INotificationPreviewProps> = 
     }
 
     const onCancelClick = async () => {
-        microsoftTeams.tasks.submitTask({ message: "Cancel", status: true });
+        microsoftTeams.dialog.url.submit({ message: "Cancel", status: true });
         return true;
     }
 
     const onCloseClick = async () => {
-        microsoftTeams.tasks.submitTask({ message: "Close", status: true });
+        microsoftTeams.dialog.url.submit({ message: "Close", status: true });
         return true;
     }
 
@@ -81,14 +84,14 @@ const NotificationPreview: React.FunctionComponent<INotificationPreviewProps> = 
             key: 'index',
             media: (
                 <Image
-                    src={element.tileImageLink !== "" ? element.tileImageLink : window.location.origin + '/images/Card2.png'  }
+                    src={element.tileImageLink !== "" ? element.tileImageLink : window.location.origin + '/images/Card2.png'}
                     styles={{ height: "30px", width: "30px" }}
                 />
             ),
             header: element.title,
-            content: <Text content={element.itemType == ItemType.Articles ? localize("article")
-                : element.itemType == ItemType.Video ? localize("video")
-                    : element.itemType == ItemType.Image ? localize("image") :
+            content: <Text content={element.itemType === ItemType.Articles ? localize("article")
+                : element.itemType === ItemType.Video ? localize("video")
+                    : element.itemType === ItemType.Image ? localize("image") :
                         localize("searchResult")} />
         }
         );
@@ -121,7 +124,7 @@ const NotificationPreview: React.FunctionComponent<INotificationPreviewProps> = 
                         <FlexItem push>
                             <Button onClick={onCancelClick} content={localize("cancelButton")} secondary />
                         </FlexItem>
-                        <Button disabled={titleText == ""} onClick={onSendNotificationClick} content={localize("sendButton")} primary />
+                        <Button disabled={titleText === ""} onClick={onSendNotificationClick} content={localize("sendButton")} primary />
                     </Flex>
                 </Flex>
             </>

@@ -4,10 +4,11 @@
 // </copyright>
 
 import * as microsoftTeams from "@microsoft/teams-js";
+
 import React, { Component } from 'react';
 
 export interface IWithContext {
-    teamsContext: microsoftTeams.Context | null,
+    teamsContext: microsoftTeams.app.Context | null,
     microsoftTeams: typeof microsoftTeams
 }
 
@@ -22,8 +23,8 @@ export default function withContext(WrappedComponent: any) {
         }
 
         componentDidMount() {
-            microsoftTeams.initialize();
-            microsoftTeams.getContext((context: microsoftTeams.Context) => {
+            microsoftTeams.app.initialize();
+            microsoftTeams.app.getContext().then((context: microsoftTeams.app.Context) => {
                 this.setState({ teamsContext: context });
             });
         }

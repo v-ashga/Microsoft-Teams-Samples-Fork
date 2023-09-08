@@ -1,13 +1,16 @@
-﻿import * as React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
-import { Flex, Image, Text, Video, MoreIcon, ShareGenericIcon, Menu, Button } from "@fluentui/react-northstar";
+﻿import "./user-dashboard.scss";
+
+import * as React from "react";
 import * as microsoftTeams from "@microsoft/teams-js";
-import "./user-dashboard.scss";
-import IArticle from "../../models/article";
-import { ItemType } from "../../models/item-type";
+
+import { Button, Flex, Image, Menu, MoreIcon, ShareGenericIcon, Text, Video } from "@fluentui/react-northstar";
+import { WithTranslation, withTranslation } from "react-i18next";
+
 import Carousel from "./Carousel";
 import { FeedbackType } from "../../models/feedback-type";
+import IArticle from "../../models/article";
+import { ItemType } from "../../models/item-type";
+import { TFunction } from "i18next";
 
 interface ITrendingCardProps extends WithTranslation {
     scenarioItem: IArticle[];
@@ -39,9 +42,9 @@ class ScenarioCard extends React.Component<ITrendingCardProps, IScenarioState> {
     componentWillUnmount() {
         window.removeEventListener("resize", this.screenResize);
     }
-/**
- * Set columns based on screen size
- */
+    /**
+     * Set columns based on screen size
+     */
     private screenResize = () => {
         let isMobileView: boolean = window.outerWidth <= 750;
         this.setState({ isMobileView: isMobileView });
@@ -58,29 +61,35 @@ class ScenarioCard extends React.Component<ITrendingCardProps, IScenarioState> {
 
     private onCardClick = (itemtype, learningId) => {
         if (itemtype === ItemType.Video) {
-            microsoftTeams.tasks.startTask({
+            microsoftTeams.dialog.url.open({
                 title: this.localize("viewArticle"),
-                height: 600,
-                width: 600,
+                size: {
+                    height: 600,
+                    width: 600
+                },
                 url: `${window.location.origin}/view-video-content?id=${learningId}&status=${true}`
-            }, (error: any, result: any) => {
+            }, (result: any) => {
                 if (result) {
-                    if (result.message === "isFeedbackOpen") {
-                        microsoftTeams.tasks.startTask({
+                    if (result.result.message === "isFeedbackOpen") {
+                        microsoftTeams.dialog.url.open({
                             title: this.localize("feedbackText"),
-                            height: 350,
-                            width: 700,
+                            size: {
+                                height: 350,
+                                width: 700
+                            },
                             url: `${window.location.origin}/user-feedback?id=${result.learningId}&status=${FeedbackType.LearningContentFeedback}`
-                        }, (error: any, result: any) => {
+                        }, (resultObj: any) => {
                         });
                     }
-                    else if (result.message === "isShareArticleOpen") {
-                        microsoftTeams.tasks.startTask({
+                    else if (result.result.message === "isShareArticleOpen") {
+                        microsoftTeams.dialog.url.open({
                             title: this.localize("shareContent"),
-                            height: 600,
-                            width: 750,
+                            size: {
+                                height: 600,
+                                width: 750
+                            },
                             url: `${window.location.origin}/view-content-share?id=${result.learningId}`
-                        }, (error: any, result: any) => {
+                        }, (resultObj: any) => {
                         });
                     }
                 }
@@ -90,7 +99,7 @@ class ScenarioCard extends React.Component<ITrendingCardProps, IScenarioState> {
             var appId = this.props.botId;
             var baseUrl = `${window.location.origin}/view-image-content?id=${learningId}`;
             let url = `https://teams.microsoft.com/l/stage/${appId}/0?context={"contentUrl":"${baseUrl}","websiteUrl":"${baseUrl}","name":"View article"}`;
-            microsoftTeams.executeDeepLink(encodeURI(url));
+            microsoftTeams.app.openLink(encodeURI(url));
         }
     }
 
@@ -106,19 +115,21 @@ class ScenarioCard extends React.Component<ITrendingCardProps, IScenarioState> {
     }
 
     private onShareClick = (learningId: string) => {
-        microsoftTeams.tasks.startTask({
+        microsoftTeams.dialog.url.open({
             title: this.localize("shareContent"),
-            height: 600,
-            width: 600,
+            size: {
+                height: 600,
+                width: 600
+            },
             url: `${window.location.origin}/view-content-share?id=${learningId}`
-        }, (error: any, result: any) => {
+        }, (result: any) => {
 
         });
     }
 
     getExt(filename) {
         var ext = filename.split('.').pop();
-        if (ext == filename) return "";
+        if (ext === filename) return "";
         return ext;
     }
 
@@ -131,7 +142,7 @@ class ScenarioCard extends React.Component<ITrendingCardProps, IScenarioState> {
         const scenarioItem = this.props.scenarioItem.map((item: IArticle) => {
             let ismp4File = false;
             let ext = this.getExt(item.itemlink);
-            if (ext == "mp4" || ext == "MP4") {
+            if (ext === "mp4" || ext === "MP4") {
                 ismp4File = true;
             }
             let carouselTag = false
@@ -153,6 +164,7 @@ class ScenarioCard extends React.Component<ITrendingCardProps, IScenarioState> {
                                     poster={item.tileImageLink}
                                     src={item.itemlink}
                                 />
+                                // eslint-disable-next-line jsx-a11y/iframe-has-title
                                 : <iframe
                                     className="card-image-details-scenario"
                                     src={item.itemlink}
@@ -192,7 +204,7 @@ class ScenarioCard extends React.Component<ITrendingCardProps, IScenarioState> {
                             </Flex>
                         </Flex>
                         {
-                            item.itemType == ItemType.Video ? <Text className="trending-card-desc" content={item.length + " min"} /> : <Text className="trending-card-desc" content={item.length + " min read"} />
+                            item.itemType === ItemType.Video ? <Text className="trending-card-desc" content={item.length + " min"} /> : <Text className="trending-card-desc" content={item.length + " min read"} />
                         }
                     </Flex>
                 </Flex>

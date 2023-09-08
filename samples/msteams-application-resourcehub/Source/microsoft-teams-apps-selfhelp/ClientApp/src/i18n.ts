@@ -2,18 +2,20 @@
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import Backend from 'i18next-xhr-backend';
-import * as microsoftTeams from "@microsoft/teams-js";
-import moment from "moment";
 import "moment/min/locales";
 
+import * as microsoftTeams from "@microsoft/teams-js";
+
+import Backend from 'i18next-xhr-backend';
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import moment from "moment";
+
 let locale = "en-US";
-microsoftTeams.initialize();
-microsoftTeams.getContext((context: microsoftTeams.Context) => {
-    moment.locale(context.locale!);
-    i18n.changeLanguage(context.locale!);
+microsoftTeams.app.initialize();
+microsoftTeams.app.getContext().then((context: microsoftTeams.app.Context) => {
+    moment.locale(context.app.locale!);
+    i18n.changeLanguage(context.app.locale!);
 });
 
 i18n

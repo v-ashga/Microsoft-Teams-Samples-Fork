@@ -2,8 +2,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 
-import React, { useEffect } from "react";
 import * as microsoftTeams from "@microsoft/teams-js";
+
+import React, { useEffect } from "react";
 
 /** Handles redirection after successful/failure sign in attempt. */
 const SignInSimpleEnd: React.FunctionComponent = () => {
@@ -20,7 +21,7 @@ const SignInSimpleEnd: React.FunctionComponent = () => {
     }
 
     useEffect(() => {
-        microsoftTeams.initialize();
+        microsoftTeams.app.initialize();
         const hashParams: any = getHashParameters();
         if (hashParams["error"]) {
             // Authentication/authorization failed

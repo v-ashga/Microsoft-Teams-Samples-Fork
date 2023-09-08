@@ -1,11 +1,14 @@
-﻿import React from 'react'
-import { FormDropdown, Input, Flex, FlexItem, Button, DropdownItemProps, Text } from '@fluentui/react-northstar'
+﻿import './add-new-article.css'
+
+import * as microsoftTeams from "@microsoft/teams-js";
+
+import { Button, DropdownItemProps, Flex, FlexItem, FormDropdown, Input, Text } from '@fluentui/react-northstar'
 import { TFunction, WithTranslation, withTranslation } from 'react-i18next';
 import withContext, { IWithContext } from '../../providers/context-provider';
-import * as microsoftTeams from "@microsoft/teams-js";
-import './add-new-article.css'
+
 import IArticle from '../../models/article'
 import { ItemType } from '../../models/item-type';
+import React from 'react'
 import { SelectionType } from '../../models/selection-type';
 import { SourceType } from '../../models/source-type';
 import { createLearningContent } from '../../api/article-api';
@@ -262,7 +265,7 @@ const AddNewTaskmodule: React.FunctionComponent<IAddNewTaskmoduleProps> = props 
     };
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
+        microsoftTeams.app.initialize();
         let sourceListArray: IDropdownProps[] = [];
         sourceListArray.push({
             id: SourceType.Internal,
@@ -310,7 +313,7 @@ const AddNewTaskmodule: React.FunctionComponent<IAddNewTaskmoduleProps> = props 
 
         if (validateInputs()) {
             var articleToAdd: IArticle = {
-                createdBy: props.teamsContext?.userObjectId!,
+                createdBy: props.teamsContext!.user!.id,
                 createdOn: new Date(),
                 eTag: "",
                 itemlink: itemLink,
@@ -334,7 +337,7 @@ const AddNewTaskmodule: React.FunctionComponent<IAddNewTaskmoduleProps> = props 
             const confirmMessage = {
                 confirm: true,
             }
-            microsoftTeams.tasks.submitTask(JSON.stringify(confirmMessage));
+            microsoftTeams.dialog.url.submit(JSON.stringify(confirmMessage));
             return true;
         }
     }
@@ -343,7 +346,7 @@ const AddNewTaskmodule: React.FunctionComponent<IAddNewTaskmoduleProps> = props 
         const confirmMessage = {
             confirm: false,
         }
-        microsoftTeams.tasks.submitTask(JSON.stringify(confirmMessage));
+        microsoftTeams.dialog.url.submit(JSON.stringify(confirmMessage));
         return true;
     }
 

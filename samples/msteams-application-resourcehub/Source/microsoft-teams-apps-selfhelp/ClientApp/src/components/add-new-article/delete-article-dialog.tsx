@@ -4,8 +4,10 @@
 
 import * as React from 'react';
 import * as microsoftTeams from "@microsoft/teams-js";
-import { Text, Flex, FlexItem, Button } from "@fluentui/react-northstar";
+
+import { Button, Flex, FlexItem, Text } from "@fluentui/react-northstar";
 import { WithTranslation, withTranslation } from "react-i18next";
+
 import { TFunction } from "i18next";
 
 class DeleteArticleDialog extends React.Component<WithTranslation> {
@@ -20,7 +22,7 @@ class DeleteArticleDialog extends React.Component<WithTranslation> {
             confirm: value,
         }
 
-        microsoftTeams.tasks.submitTask(JSON.stringify(confirmMessage));
+        microsoftTeams.dialog.url.submit(JSON.stringify(confirmMessage));
         return true;
     }
 
@@ -40,9 +42,9 @@ class DeleteArticleDialog extends React.Component<WithTranslation> {
                     <Flex column gap="gap.small" hAlign="center">
                         <FlexItem push>
                             <Flex gap="gap.medium">
-                            <Button secondary content={this.localize("cancelButton")} onClick={() => this.confirmDelete(false)} />
-                            <Button primary content={this.localize("confirmButton")} onClick={() => this.confirmDelete(true)} />
-                        </Flex>
+                                <Button secondary content={this.localize("cancelButton")} onClick={() => this.confirmDelete(false)} />
+                                <Button primary content={this.localize("confirmButton")} onClick={() => this.confirmDelete(true)} />
+                            </Flex>
                         </FlexItem>
                     </Flex>
                 </Flex>

@@ -3,11 +3,14 @@
 // Licensed under the MIT license.
 // </copyright>
 
-import React, { Suspense } from 'react';
 import './App.css';
+
 import * as microsoftTeams from "@microsoft/teams-js";
-import { TeamsThemeContext, getContext, ThemeStyle } from 'msteams-ui-components-react';
-import { Provider, teamsTheme, teamsDarkTheme, teamsHighContrastTheme } from '@fluentui/react-northstar';
+
+import { Provider, teamsDarkTheme, teamsHighContrastTheme, teamsTheme } from '@fluentui/react-northstar';
+import React, { Suspense } from 'react';
+import { TeamsThemeContext, ThemeStyle, getContext } from 'msteams-ui-components-react';
+
 import { AppRoute } from './router/router';
 import i18n from "./i18n";
 
@@ -27,17 +30,17 @@ class App extends React.Component<{}, IAppState> {
     }
 
     public componentDidMount() {
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            let theme = context.theme || "";
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            let theme = context.app.theme || "";
             this.updateTheme(theme);
             this.setState({
                 theme: theme
             });
-            i18n.changeLanguage(context.locale);
+            i18n.changeLanguage(context.app.locale);
         });
 
-        microsoftTeams.registerOnThemeChangeHandler((theme) => {
+        microsoftTeams.app.registerOnThemeChangeHandler((theme) => {
             this.updateTheme(theme);
             this.setState({
                 theme: theme,

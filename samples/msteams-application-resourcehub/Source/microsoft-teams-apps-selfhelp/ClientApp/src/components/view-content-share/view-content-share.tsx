@@ -1,34 +1,37 @@
-﻿import React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
-import withContext, { IWithContext } from '../../providers/context-provider';
+﻿import "./view-content-share.scss";
+
 import * as microsoftTeams from "@microsoft/teams-js";
+
 import {
-    Flex,
-    Text,
-    Dropdown,
-    Button,
-    TextArea,
     Breadcrumb,
+    Button,
     ChevronEndMediumIcon,
-    Video,
+    Dropdown,
+    Flex,
     Image,
     Loader,
-    RadioGroup
+    RadioGroup,
+    Text,
+    TextArea,
+    Video
 } from '@fluentui/react-northstar';
-import "./view-content-share.scss";
-import IArticle from "../../models/article";
-import { ItemType } from "../../models/item-type";
-import { getLearningContentById } from "../../api/article-api";
-import { getAllUsersAsync, getAllTeamsAsync } from "../../api/user-api";
-import { ImageUtil } from "../../utility/imageutility";
-import { shareArticleAsync } from "../../api/share-article-api";
-import { logCustomEvent } from "../../api/log-event-api";
+import { WithTranslation, withTranslation } from "react-i18next";
+import { getAllTeamsAsync, getAllUsersAsync } from "../../api/user-api";
+import withContext, { IWithContext } from '../../providers/context-provider';
+
 import Constants from "../../constants/constants";
+import IArticle from "../../models/article";
+import { ImageUtil } from "../../utility/imageutility";
+import { ItemType } from "../../models/item-type";
+import React from "react";
+import { TFunction } from "i18next";
+import { getLearningContentById } from "../../api/article-api";
+import { logCustomEvent } from "../../api/log-event-api";
+import { shareArticleAsync } from "../../api/share-article-api";
 
 interface IViewContentShareProps extends WithTranslation, IWithContext {
     carouselItem: IArticle[];
-    isStageView:boolean;
+    isStageView: boolean;
     onShareButtonClick: () => void;
 }
 
@@ -74,10 +77,10 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
 
     React.useEffect(() => {
         let params = new URLSearchParams(window.location.search);
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            setUserAadId(context.userObjectId!);
-            setTenantId(context.tid!);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            setUserAadId(context?.user?.id!);
+            setTenantId(context?.user?.tenant?.id!);
             var learningId = params.get("id")!;
             if (learningId !== null) {
                 setLearningId(learningId);
@@ -99,15 +102,13 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
         setMobileView(window.outerWidth <= 750);
     }
 
-    const getManagerList = async (searchText:string) => {
+    const getManagerList = async (searchText: string) => {
         try {
             const response = await getAllUsersAsync(searchText);
-            if(response.data && response.data.length >0)
-            {
-            SetUsers(response.data);
+            if (response.data && response.data.length > 0) {
+                SetUsers(response.data);
             }
-            else
-            {
+            else {
                 SetUsers([]);
             }
 
@@ -131,7 +132,7 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
 
     const getExt = (filename: any) => {
         var ext = filename.split('.').pop();
-        if (ext == filename) return "";
+        if (ext === filename) return "";
         return ext;
     }
 
@@ -143,7 +144,7 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
             setTileImageLink(article.data.tileImageLink);
             seItemType(article.data.itemType);
             let ext = getExt(article.data.itemlink);
-            if (ext == "mp4" || ext == "MP4") {
+            if (ext === "mp4" || ext === "MP4") {
                 setismp4File(true);
             }
         }
@@ -151,7 +152,7 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
     }
 
     const onBackClick = () => {
-        microsoftTeams.tasks.submitTask();
+        microsoftTeams.dialog.url.submit();
         return true;
     }
 
@@ -192,7 +193,7 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
 
     const onSearchQueryChange = async (event: any, itemsData: any) => {
         if (itemsData && itemsData.value) {
-        getManagerList(itemsData.searchQuery)
+            getManagerList(itemsData.searchQuery)
         }
     }
 
@@ -265,7 +266,7 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
     }
 
     const onChange = (event) => {
-        if (event == "1") {
+        if (event === "1") {
             setisShareToUser(false)
         }
         else {
@@ -336,7 +337,7 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
                         <Text content={localize("typeAMessage")} style={{ marginTop: "0.8rem" }} className="typeMessage-Text" />
                         <TextArea className="text-area" fluid placeholder={localize("Type here")}
                             onChange={(event: any) => onMessageTextChange(event.target.value)} value={message} />
-                        {itemType == ItemType.Video ?
+                        {itemType === ItemType.Video ?
                             ismp4File ?
                                 <Video className="view-share-content-details"
                                     poster={tileImageLink}
@@ -344,6 +345,7 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
 
                                 />
                                 :
+                                // eslint-disable-next-line jsx-a11y/iframe-has-title
                                 <><iframe
                                     className="view-share-content-details"
                                     src={itemlink}
@@ -376,7 +378,7 @@ const ViewContentShare: React.FunctionComponent<IViewContentShareProps> = props 
                     </Flex>
                     <Flex className="thank-you-close-button-share" >
                         <Flex.Item push>
-                            <Button content={localize("closeButton")} secondary onClick={props.isStageView ? props.onShareButtonClick : onBackClick}/>
+                            <Button content={localize("closeButton")} secondary onClick={props.isStageView ? props.onShareButtonClick : onBackClick} />
                         </Flex.Item>
                     </Flex>
                 </Flex>

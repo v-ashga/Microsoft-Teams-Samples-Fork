@@ -1,30 +1,33 @@
-﻿import React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
+﻿import "./view-video-content.scss";
+
 import * as microsoftTeams from "@microsoft/teams-js";
-import withContext, { IWithContext } from '../../providers/context-provider';
-import "./view-video-content.scss";
-import moment from 'moment';
+
 import {
-    Flex,
-    Text,
-    Image,
     Button,
-    Video,
-    ShareGenericIcon
+    Flex,
+    Image,
+    ShareGenericIcon,
+    Text,
+    Video
 } from '@fluentui/react-northstar';
-import { getLearningContentById } from "../../api/article-api";
-import ILearningPath from "../../models/learning-path";
-import { createOrUpdateLearningPathContent } from "../../api/learning-path-api";
-import { CompleteState } from "../../models/complete-state";
-import { ReactionState } from "../../models/reaction-state";
-import IUserReaction from "../../models/user-reaction";
-import { createOrUpdateUserReaction, getUserReactionByLearningId } from "../../api/user-reaction-api";
 import { Icon, initializeIcons } from "@fluentui/react";
-import { SelectionType } from "../../models/selection-type";
-import IArticle from "../../models/article";
-import { logCustomEvent } from "../../api/log-event-api";
+import { WithTranslation, withTranslation } from "react-i18next";
+import { createOrUpdateUserReaction, getUserReactionByLearningId } from "../../api/user-reaction-api";
+import withContext, { IWithContext } from '../../providers/context-provider';
+
+import { CompleteState } from "../../models/complete-state";
 import { FeedbackType } from "../../models/feedback-type";
+import IArticle from "../../models/article";
+import ILearningPath from "../../models/learning-path";
+import IUserReaction from "../../models/user-reaction";
+import React from "react";
+import { ReactionState } from "../../models/reaction-state";
+import { SelectionType } from "../../models/selection-type";
+import { TFunction } from "i18next";
+import { createOrUpdateLearningPathContent } from "../../api/learning-path-api";
+import { getLearningContentById } from "../../api/article-api";
+import { logCustomEvent } from "../../api/log-event-api";
+import moment from 'moment';
 
 interface IViewVideoContentProps extends WithTranslation, IWithContext {
 }
@@ -62,11 +65,11 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
             reactionId: "",
             learningContentId: learningId,
             reactionState: state,
-            lastModifiedOn: new Date,
+            lastModifiedOn: new Date(),
             userAadId: userAadId!,
             partitionKey: "",
             rowKey: "",
-            timestamp: new Date,
+            timestamp: new Date(),
             eTag: ""
         }
         var response = await createOrUpdateUserReaction(sendReaction);
@@ -83,11 +86,11 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
             reactionId: "",
             learningContentId: learningId,
             reactionState: state,
-            lastModifiedOn: new Date,
+            lastModifiedOn: new Date(),
             userAadId: userAadId!,
             partitionKey: "",
             rowKey: "",
-            timestamp: new Date,
+            timestamp: new Date(),
             eTag: ""
         }
         var response = await createOrUpdateUserReaction(sendReaction);
@@ -107,13 +110,13 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
     }
 
     React.useEffect(() => {
-        microsoftTeams.initialize();
-        microsoftTeams.getContext((context) => {
-            setUserAadId(context.userObjectId);
+        microsoftTeams.app.initialize();
+        microsoftTeams.app.getContext().then((context) => {
+            setUserAadId(context!.user!.id!);
             var learningId = queryParams.get("id")!;
             if (learningId !== null) {
                 intializeDataAsync(learningId);
-                intializeUserReactionAsync(learningId, context.userObjectId!);
+                intializeUserReactionAsync(learningId, context!.user!.id!);
                 logCustomEvent({
                     eTag: "",
                     timestamp: new Date(),
@@ -123,9 +126,9 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
                     learningContentId: learningId,
                     eventType: "Video",
                     createdOn: new Date(),
-                    userAadId: context.userObjectId!,
+                    userAadId: context!.user!.id!,
                     searchkey: "",
-                    tenantId: context.tid!,
+                    tenantId: context!.user!.tenant!.id!,
                     sharedToUserIds: "",
                     sharedToChannelIds: "",
                 });
@@ -135,12 +138,12 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
 
     const intializeUserReactionAsync = async (learningId: string, aadId: string) => {
         let reaction = await getUserReactionByLearningId(learningId, aadId!);
-        if (reaction.data == "") {
+        if (reaction.data === "") {
             setLikeOne(window.location.origin + "/icons/Like1.png");
             setDisLikeOne(window.location.origin + "/icons/DisLike1.png");
         }
         else {
-            if (reaction.data.reactionState == ReactionState.Like) {
+            if (reaction.data.reactionState === ReactionState.Like) {
                 setIsLike(true);
                 setLikeOne(window.location.origin + "/icons/Like2.png");
                 setIsDisLike(false)
@@ -196,12 +199,12 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
     }
 
     const onAddFeedbackClick = async () => {
-        microsoftTeams.tasks.submitTask({ learningId: learningId, message: "isFeedbackOpen", status: FeedbackType.LearningContentFeedback });
+        microsoftTeams.dialog.url.submit({ learningId: learningId, message: "isFeedbackOpen", status: FeedbackType.LearningContentFeedback });
         return true;
     }
 
     const onShareButtonClick = () => {
-        microsoftTeams.tasks.submitTask({ learningId: learningId, message: "isShareArticleOpen" });
+        microsoftTeams.dialog.url.submit({ learningId: learningId, message: "isShareArticleOpen" });
         return true;
     }
 
@@ -211,9 +214,10 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
 
                 <Flex className="video-content" >
                     {
-                        (itemlink.split('.').pop() == "mp4" || itemlink.split('.').pop() == "MP4")
+                        (itemlink.split('.').pop() === "mp4" || itemlink.split('.').pop() === "MP4")
                             ?
                             <Video src={itemlink} poster={tileImageLink} variables={{ width: '100%' }} />
+                            // eslint-disable-next-line jsx-a11y/iframe-has-title
                             : <iframe width="536" height="245"
                                 src={itemlink}
                                 frameBorder="0"
@@ -263,13 +267,13 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
                             </Flex.Item>
                             {
                                 knowmoreLink !== "" && <Flex.Item>
-                                    <a target="_blank" href={knowmoreLink}><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
+                                    <a target="_blank" href={knowmoreLink} rel="noreferrer"><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
                                 </Flex.Item>
                             }
                         </>
                             : knowmoreLink !== "" &&
                             <Flex.Item push>
-                                <a target="_blank" href={knowmoreLink}><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
+                                <a target="_blank" href={knowmoreLink} rel="noreferrer"><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
                             </Flex.Item>
                     }
                 </Flex>
@@ -282,9 +286,10 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
             <Flex column gap="gap.small" className="main-container-mobile" >
                 <Flex className="video-contentMobile" >
                     {
-                        (itemlink.split('.').pop() == "mp4" || itemlink.split('.').pop() == "MP4")
+                        (itemlink.split('.').pop() === "mp4" || itemlink.split('.').pop() === "MP4")
                             ?
                             <Video src={itemlink} poster={tileImageLink} />
+                            // eslint-disable-next-line jsx-a11y/iframe-has-title
                             : <iframe height="245"
                                 className="video-contentMobile"
                                 src={itemlink}
@@ -321,19 +326,19 @@ const ViewVideoContent: React.FunctionComponent<IViewVideoContentProps> = props 
                 </Flex>
                 <Flex styles={{ marginTop: "5rem" }}>
                     {
-                        learningContent.sectionType == SelectionType.LearningPath ? <>
+                        learningContent.sectionType === SelectionType.LearningPath ? <>
                             <Flex.Item push>
                                 <Button content={"Done"} secondary onClick={onCloseArticleClick} />
                             </Flex.Item>
                             {
                                 knowmoreLink !== "" && <Flex.Item>
-                                    <a target="_blank" href={knowmoreLink}><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
+                                    <a target="_blank" href={knowmoreLink} rel="noreferrer"><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
                                 </Flex.Item>
                             }
                         </>
                             : knowmoreLink !== "" &&
                             <Flex.Item push>
-                                <a target="_blank" href={knowmoreLink}><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
+                                <a target="_blank" href={knowmoreLink} rel="noreferrer"><Button content={localize("knowMore")} primary styles={{ marginLeft: "1rem" }} /></a>
                             </Flex.Item>
                     }
                 </Flex>

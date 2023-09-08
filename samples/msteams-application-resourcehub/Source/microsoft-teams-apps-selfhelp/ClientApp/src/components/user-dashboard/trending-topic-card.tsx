@@ -1,12 +1,15 @@
-﻿import * as React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { TFunction } from "i18next";
-import { Flex, Card, Image, Text, Video, MoreIcon, ShareGenericIcon, Menu, Button } from "@fluentui/react-northstar";
+﻿import "./user-dashboard.scss";
+
+import * as React from "react";
 import * as microsoftTeams from "@microsoft/teams-js";
-import "./user-dashboard.scss";
-import { ItemType } from "../../models/item-type";
-import IArticle from "../../models/article";
+
+import { Button, Card, Flex, Image, Menu, MoreIcon, ShareGenericIcon, Text, Video } from "@fluentui/react-northstar";
+import { WithTranslation, withTranslation } from "react-i18next";
+
 import { FeedbackType } from "../../models/feedback-type";
+import IArticle from "../../models/article";
+import { ItemType } from "../../models/item-type";
+import { TFunction } from "i18next";
 
 interface ITrendingCardProps extends WithTranslation {
     tiles: IArticle;
@@ -22,29 +25,35 @@ class TrendingTopicCard extends React.Component<ITrendingCardProps> {
 
     private onCardClick = (itemtype, learningId) => {
         if (itemtype === ItemType.Video) {
-            microsoftTeams.tasks.startTask({
+            microsoftTeams.dialog.url.open({
                 title: this.localize("viewArticle"),
-                height: 600,
-                width: 600,
+                size: {
+                    height: 600,
+                    width: 600
+                },
                 url: `${window.location.origin}/view-video-content?id=${learningId}&status=${true}`
-            }, (error: any, result: any) => {
+            }, (result: any) => {
                 if (result) {
-                    if (result.message === "isFeedbackOpen") {
-                        microsoftTeams.tasks.startTask({
+                    if (result.result.message === "isFeedbackOpen") {
+                        microsoftTeams.dialog.url.open({
                             title: this.localize("feedbackText"),
-                            height: 350,
-                            width: 700,
+                            size: {
+                                height: 350,
+                                width: 700
+                            },
                             url: `${window.location.origin}/user-feedback?id=${result.learningId}&status=${FeedbackType.LearningContentFeedback}`
-                        }, (error: any, result: any) => {
+                        }, (resultObj: any) => {
                         });
                     }
-                    else if (result.message === "isShareArticleOpen") {
-                        microsoftTeams.tasks.startTask({
+                    else if (result.result.message === "isShareArticleOpen") {
+                        microsoftTeams.dialog.url.open({
                             title: this.localize("shareContent"),
-                            height: 600,
-                            width: 750,
-                            url: `${window.location.origin}/view-content-share?id=${result.learningId}`
-                        }, (error: any, result: any) => {
+                            size: {
+                                height: 600,
+                                width: 750
+                            },
+                            url: `${window.location.origin}/view-content-share?id=${result.result.learningId}`
+                        }, (resultObj: any) => {
                         });
                     }
                 }
@@ -54,17 +63,19 @@ class TrendingTopicCard extends React.Component<ITrendingCardProps> {
             var appId = this.props.botId;
             var baseUrl = `${window.location.origin}/view-image-content?id=${learningId}`
             let url = `https://teams.microsoft.com/l/stage/${appId}/0?context={"contentUrl":"${baseUrl}","websiteUrl":"${baseUrl}","name":"View article"}`;
-            microsoftTeams.executeDeepLink(encodeURI(url));
+            microsoftTeams.app.openLink(encodeURI(url));
         }
     }
 
     private onShareClick = (learningId: string) => {
-        microsoftTeams.tasks.startTask({
+        microsoftTeams.dialog.url.open({
             title: this.localize("shareContent"),
-            height: 600,
-            width: 600,
+            size: {
+                height: 600,
+                width: 600
+            },
             url: `${window.location.origin}/view-content-share?id=${learningId}`
-        }, (error: any, result: any) => {
+        }, (resultObj: any) => {
 
         });
     }
@@ -76,13 +87,14 @@ class TrendingTopicCard extends React.Component<ITrendingCardProps> {
                 <Card className="trending-card-details" inverted size="smaller" >
                     <Card.Body fitted>
                         <Flex column padding="padding.medium">
-                            {this.props.tiles.itemType == ItemType.Video ?
-                                ext == "mp4" || ext == "MP4" ?
+                            {this.props.tiles.itemType === ItemType.Video ?
+                                ext === "mp4" || ext === "MP4" ?
                                     <Video className="card-image-details"
                                         poster={this.props.tiles.tileImageLink}
                                         src={this.props.tiles.itemlink}
                                         styles={{ width: "258px" }}
                                     />
+                                    // eslint-disable-next-line jsx-a11y/iframe-has-title
                                     : <iframe width="258"
                                         className="card-image-details"
                                         src={this.props.tiles.itemlink}
